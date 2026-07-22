@@ -10,9 +10,9 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-        --accent: #4c8dff;
-        --accent-2: #9146ff;
-        --panel: rgba(12, 17, 32, 0.6);
+        --accent: #00e5bc;
+        --accent-hover: #00c49f;
+        --panel: rgba(12, 17, 32, 0.75);
         --panel-border: rgba(120, 150, 220, 0.28);
         --text-main: #eef1fb;
         --text-dim: #90a0c8;
@@ -51,7 +51,7 @@
         flex-direction: column;
         align-items: center;
         padding: 4vh 20px 8vh;
-        gap: 30px;
+        gap: 40px;
     }
 
     .hero-title {
@@ -71,7 +71,7 @@
         to { opacity: 1; transform: translateY(0); }
     }
 
-    /* ================= KÁRTYA ================= */
+    /* ================= KÁRTYA (PROFIL) ================= */
     .browser-window {
         width: 100%;
         max-width: 420px;
@@ -166,6 +166,118 @@
     .btn-telegram:hover { background: #26A5E4; box-shadow: 0 8px 22px rgba(38, 165, 228, 0.45); }
     .btn-email:hover    { background: #EA4335; box-shadow: 0 8px 22px rgba(234, 67, 53, 0.45); }
 
+    /* ================= KASZINO SZEKCIÓ ================= */
+    .casino-section {
+        width: 100%;
+        max-width: 420px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        opacity: 0;
+        transform: translateY(18px);
+        transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+    .no-js .casino-section { opacity: 1; transform: none; }
+    .casino-section.reveal { opacity: 1; transform: translateY(0); }
+
+    .section-header-title {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.4rem;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding-left: 5px;
+    }
+
+    .casino-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 20px;
+        width: 100%;
+    }
+
+    .casino-card {
+        background: var(--panel);
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+        border: 1px solid var(--panel-border);
+        border-radius: 16px;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+        transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    }
+
+    .casino-card:hover {
+        transform: translateY(-5px);
+        border-color: rgba(0, 229, 188, 0.5);
+        box-shadow: 0 20px 45px rgba(0, 229, 188, 0.15);
+    }
+
+    .casino-logo-box {
+        width: 300px;
+        height: 84px;
+        margin: 0 auto;
+        background: rgba(0, 0, 0, 0.4);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        overflow: hidden;
+    }
+
+    .casino-logo {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        display: block;
+    }
+
+    .casino-perks {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        font-size: 0.82rem;
+        color: var(--text-dim);
+    }
+
+    .casino-perk-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .casino-perk-item::before {
+        content: "✓";
+        color: var(--accent);
+        font-weight: bold;
+    }
+
+    .casino-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        padding: 12px;
+        border-radius: 8px;
+        font-family: 'Inter', sans-serif;
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: #050814;
+        background: var(--accent);
+        transition: background 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .casino-btn:hover {
+        background: var(--accent-hover);
+        box-shadow: 0 6px 20px rgba(0, 229, 188, 0.4);
+    }
+
+    /* ================= KAPU ================= */
     .gate-overlay {
         position: fixed;
         inset: 0;
@@ -243,7 +355,7 @@
     }
 
     .gate-btn-confirm { background: #454e63; color: #cfd4e2; }
-    .gate-btn-confirm:not(:disabled):hover { background: var(--accent); color: #fff; box-shadow: 0 6px 18px rgba(76, 141, 255, 0.4); }
+    .gate-btn-confirm:not(:disabled):hover { background: var(--accent); color: #050814; box-shadow: 0 6px 18px rgba(0, 229, 188, 0.4); }
     .gate-btn-confirm:disabled { opacity: 0.5; cursor: not-allowed; }
     .gate-btn-leave { background: transparent; color: var(--text-dim); }
     .gate-btn-leave:hover { border-color: rgba(255,255,255,0.4); color: var(--text-main); }
@@ -283,7 +395,7 @@
 <main id="top">
     <div class="hero-title">CASI</div>
 
-    <!-- ================= KÁRTYA ================= -->
+    <!-- ================= PROFIL KÁRTYA ================= -->
     <div class="browser-window" id="mainCard">
         <div class="browser-header">
             <div class="dots">
@@ -317,6 +429,25 @@
             </div>
         </div>
     </div>
+
+    <!-- ================= KASZINO SZEKCIÓ ================= -->
+    <div class="casino-section" id="casinoSection">
+        <div class="section-header-title">🎰 Featured Casino</div>
+        
+        <div class="casino-grid">
+            <div class="casino-card">
+                <div class="casino-logo-box">
+                    <img src="spinline-logo.png" alt="SpinLine" class="casino-logo">
+                </div>
+                <div class="casino-perks">
+                    <div class="casino-perk-item">Üdvözlő csomag</div>
+                    <div class="casino-perk-item">Akár 720 000 Ft</div>
+                    <div class="casino-perk-item">+ 800 Ingyenes Pörgetés</div>
+                </div>
+                <a href="https://spln.pleotra.com/?mid=382466_2215736" target="_blank" class="casino-btn">Játék most</a>
+            </div>
+        </div>
+    </div>
 </main>
 
 <footer>&copy; <span id="year"></span> casi</footer>
@@ -332,6 +463,7 @@
         var btnLeave = document.getElementById('btnLeave');
         var gateOverlay = document.getElementById('gateOverlay');
         var mainCard = document.getElementById('mainCard');
+        var casinoSection = document.getElementById('casinoSection');
 
         function updateConfirmState() {
             btnConfirm.disabled = !(chkAge.checked && chkRegion.checked);
@@ -342,6 +474,7 @@
         function enterSite() {
             gateOverlay.classList.add('hidden');
             mainCard.classList.add('reveal');
+            casinoSection.classList.add('reveal');
             try { localStorage.setItem('casi_verified', '1'); } catch (e) {}
             setTimeout(function () { gateOverlay.style.display = 'none'; }, 400);
         }
@@ -359,6 +492,7 @@
         if (alreadyVerified) {
             gateOverlay.style.display = 'none';
             mainCard.classList.add('reveal');
+            casinoSection.classList.add('reveal');
         }
     });
 </script>
