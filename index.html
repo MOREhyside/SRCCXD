@@ -34,39 +34,9 @@
         position: fixed;
         inset: 0;
         z-index: -2;
-        background:
-            radial-gradient(ellipse 900px 600px at 15% 10%, rgba(76,141,255,0.35), transparent 60%),
-            radial-gradient(ellipse 700px 500px at 85% 85%, rgba(145,70,255,0.28), transparent 60%),
-            linear-gradient(160deg, #050814 0%, #0a1230 45%, #101c42 100%);
-    }
-
-    .bg::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background-image: repeating-linear-gradient(115deg, rgba(255,255,255,0.035) 0px, rgba(255,255,255,0.035) 2px, transparent 2px, transparent 90px);
-    }
-
-    .watermark {
-        position: fixed;
-        inset: 0;
-        z-index: -1;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        gap: 3vw;
-        opacity: 0.06;
-        pointer-events: none;
-        transform: rotate(-6deg) scale(1.2);
-    }
-
-    .watermark span {
-        white-space: nowrap;
-        font-family: 'Space Grotesk', sans-serif;
-        font-weight: 700;
-        font-size: 4.5vw;
-        letter-spacing: 0.05em;
-        color: var(--text-main);
+        background: linear-gradient(rgba(4, 6, 14, 0.45), rgba(4, 6, 14, 0.45)),
+                    url('bg.jpg') no-repeat center center fixed;
+        background-size: cover;
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -185,12 +155,9 @@
         border-radius: 50%;
         object-fit: cover;
         display: block;
-        background: linear-gradient(145deg, #2a3868, #1a2140);
         border: 3px solid rgba(140, 170, 255, 0.55);
         box-shadow: 0 0 0 6px rgba(76, 141, 255, 0.12), 0 8px 20px rgba(0,0,0,0.35);
     }
-
-    .profile-img svg { width: 60%; height: 60%; display: block; margin: 20% auto; }
 
     .wordmark {
         font-family: 'Space Grotesk', sans-serif;
@@ -228,7 +195,7 @@
     }
 
     .link-btn:hover { transform: translateY(-3px); }
-    .link-btn svg { width: 18px; height: 18px; flex-shrink: 0; }
+    .link-icon { width: 20px; height: 20px; object-fit: contain; flex-shrink: 0; }
 
     .btn-discord:hover  { background: #5865F2; box-shadow: 0 8px 22px rgba(88, 101, 242, 0.45); }
     .btn-twitch:hover   { background: #9146FF; box-shadow: 0 8px 22px rgba(145, 70, 255, 0.45); }
@@ -340,12 +307,6 @@
 <body class="no-js">
 
 <div class="bg"></div>
-<div class="watermark" aria-hidden="true">
-    <span>casi &middot; portfólió &middot; linkek &middot; casi &middot; portfólió &middot; linkek &middot; casi</span>
-    <span>portfólió &middot; linkek &middot; casi &middot; portfólió &middot; linkek &middot; casi &middot; portfólió</span>
-    <span>linkek &middot; casi &middot; portfólió &middot; linkek &middot; casi &middot; portfólió &middot; linkek</span>
-    <span>casi &middot; portfólió &middot; linkek &middot; casi &middot; portfólió &middot; linkek &middot; casi</span>
-</div>
 
 <!-- ================= VERIFIKÁCIÓS KAPU ================= -->
 <div class="gate-overlay" id="gateOverlay">
@@ -387,12 +348,7 @@
 
         <div class="content">
             <div class="profile-container">
-                <div class="profile-img">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="#8ca8ff" stroke-width="1.5">
-                        <circle cx="12" cy="8" r="4"></circle>
-                        <path d="M4 20c0-4.4 3.6-7 8-7s8 2.6 8 7"></path>
-                    </svg>
-                </div>
+                <img src="pfp.png" alt="Profilkép" class="profile-img">
             </div>
 
             <div class="wordmark">CASI</div>
@@ -400,20 +356,16 @@
 
             <div class="links-list">
                 <a href="https://discord.gg/kNU6CpUC5Q" target="_blank" class="link-btn btn-discord">
-                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.3 4.4A19.8 19.8 0 0 0 15.6 3c-.2.4-.5.9-.7 1.4a18.3 18.3 0 0 0-5.8 0A9 9 0 0 0 8.4 3a19.8 19.8 0 0 0-4.7 1.5C1 8.7.3 12.8.6 16.9a20 20 0 0 0 6 3c.5-.6.9-1.3 1.2-2a13 13 0 0 1-1.9-.9l.5-.4a14.3 14.3 0 0 0 12.2 0l.5.4c-.6.4-1.2.6-1.9.9.3.7.7 1.4 1.2 2a20 20 0 0 0 6-3c.4-4.7-.8-8.8-3.1-12.5ZM9 14.6c-.9 0-1.6-.8-1.6-1.8S8.1 11 9 11s1.7.8 1.6 1.8c0 1-.7 1.8-1.6 1.8Zm6 0c-.9 0-1.6-.8-1.6-1.8S14.1 11 15 11s1.7.8 1.6 1.8c0 1-.7 1.8-1.6 1.8Z"/></svg>
-                    Discord (casi)
+                    <img src="discord-logo.png" alt="Discord" class="link-icon"> Discord (casi)
                 </a>
                 <a href="https://www.twitch.tv/srccxd" target="_blank" class="link-btn btn-twitch">
-                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 2 2 6.5V19h6V22h3.5L14.5 19H19l3-3V2H4Zm16 13-2 2h-4l-2.5 2.5V17H6V4h14v11Zm-3-7h-2v5h2V8Zm-5 0H10v5h2V8Z"/></svg>
-                    Twitch (srccxd)
+                    <img src="twitch-logo.png" alt="Twitch" class="link-icon"> Twitch (srccxd)
                 </a>
                 <a href="https://t.me/srccxd" target="_blank" class="link-btn btn-telegram">
-                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.9 4.3 18.6 20c-.2 1-.9 1.3-1.7.8l-4.8-3.5-2.3 2.2c-.3.3-.5.5-1 .5l.3-4.9L18 6.7c.4-.4-.1-.6-.6-.2L6.7 13.7 2 12.2c-1-.3-1-1 .2-1.5L20.6 3.3c.8-.3 1.6.2 1.3 1Z"/></svg>
-                    Telegram (srccxd)
+                    <img src="telegram-logo.png" alt="Telegram" class="link-icon"> Telegram (srccxd)
                 </a>
                 <a href="mailto:sourceid18@gmail.com" class="link-btn btn-email">
-                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M2 5h20v14H2V5Zm2 1v.4l8 5.6 8-5.6V6H4Zm16 2.5-7.4 5.2a1 1 0 0 1-1.2 0L4 8.5V18h16V8.5Z"/></svg>
-                    Business email
+                    <img src="gmail-logo.png" alt="Email" class="link-icon"> Business email
                 </a>
             </div>
         </div>
