@@ -1,295 +1,381 @@
-cat > /home/claude/site/index.html << 'HTMLEOF'
 <!DOCTYPE html>
 <html lang="hu">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>casi</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>casi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
-        :root {
-            --bg-glow: #4c8dff;
-            --panel: rgba(10, 14, 26, 0.62);
-            --panel-border: rgba(120, 150, 220, 0.28);
-            --text-main: #eef1fb;
-            --text-dim: #9aa4c2;
-        }
+    :root {
+        --accent: #4c8dff;
+        --accent-2: #9146ff;
+        --panel: rgba(12, 17, 32, 0.6);
+        --panel-border: rgba(120, 150, 220, 0.28);
+        --text-main: #eef1fb;
+        --text-dim: #90a0c8;
+    }
 
-        body {
-            background: linear-gradient(rgba(4, 6, 14, 0.55), rgba(4, 6, 14, 0.55)),
-                        url('bg.jpg') no-repeat center center fixed;
-            background-size: cover;
-            font-family: 'Inter', sans-serif;
-            color: var(--text-main);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
-        }
+    html, body { height: 100%; }
 
-        @media (prefers-reduced-motion: reduce) {
-            *, *::before, *::after { transition: none !important; }
-        }
+    body {
+        font-family: 'Inter', sans-serif;
+        color: var(--text-main);
+        min-height: 100vh;
+        overflow-x: hidden;
+        position: relative;
+        background: #050814;
+    }
 
-        /* ================= VERIFIKÁCIÓS KAPU ================= */
-        .gate-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(3, 5, 12, 0.88);
-            backdrop-filter: blur(6px);
-            -webkit-backdrop-filter: blur(6px);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 100;
-            padding: 20px;
-            opacity: 1;
-            transition: opacity 0.35s ease;
-        }
+    /* ================= HÁTTÉR ================= */
+    .bg {
+        position: fixed;
+        inset: 0;
+        z-index: -2;
+        background:
+            radial-gradient(ellipse 900px 600px at 15% 10%, rgba(76,141,255,0.35), transparent 60%),
+            radial-gradient(ellipse 700px 500px at 85% 85%, rgba(145,70,255,0.28), transparent 60%),
+            linear-gradient(160deg, #050814 0%, #0a1230 45%, #101c42 100%);
+    }
 
-        .gate-overlay.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
+    .bg::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image: repeating-linear-gradient(115deg, rgba(255,255,255,0.035) 0px, rgba(255,255,255,0.035) 2px, transparent 2px, transparent 90px);
+    }
 
-        .gate-card {
-            width: 100%;
-            max-width: 360px;
-            background: #0c1020;
-            border: 1px solid rgba(120, 150, 220, 0.25);
-            border-radius: 16px;
-            padding: 32px 28px 26px;
-            text-align: center;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-        }
+    .watermark {
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 3vw;
+        opacity: 0.06;
+        pointer-events: none;
+        transform: rotate(-6deg) scale(1.2);
+    }
 
-        .gate-badge {
-            width: 56px;
-            height: 56px;
-            margin: 0 auto 18px;
-            border-radius: 50%;
-            border: 2px solid var(--text-main);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: 'Space Grotesk', sans-serif;
-            font-weight: 700;
-            font-size: 1.1rem;
-        }
+    .watermark span {
+        white-space: nowrap;
+        font-family: 'Space Grotesk', sans-serif;
+        font-weight: 700;
+        font-size: 4.5vw;
+        letter-spacing: 0.05em;
+        color: var(--text-main);
+    }
 
-        .gate-card h2 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 1.3rem;
-            margin-bottom: 20px;
-        }
+    @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { transition: none !important; animation: none !important; }
+    }
 
-        .gate-check {
-            display: flex;
-            align-items: flex-start;
-            gap: 10px;
-            text-align: left;
-            font-size: 0.88rem;
-            color: var(--text-dim);
-            margin-bottom: 12px;
-            cursor: pointer;
-        }
+    /* ================= NAVIGÁCIÓ ================= */
+    nav {
+        position: relative;
+        z-index: 5;
+        display: flex;
+        justify-content: center;
+        gap: clamp(20px, 5vw, 48px);
+        padding: 26px 20px 10px;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 0.82rem;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+    }
 
-        .gate-check input {
-            margin-top: 2px;
-            accent-color: var(--bg-glow);
-            width: 15px;
-            height: 15px;
-            flex-shrink: 0;
-        }
+    nav a {
+        color: var(--text-dim);
+        text-decoration: none;
+        position: relative;
+        padding-bottom: 6px;
+        transition: color 0.2s ease;
+    }
 
-        .gate-btn {
-            width: 100%;
-            padding: 12px;
-            border-radius: 8px;
-            font-family: 'Inter', sans-serif;
-            font-size: 0.92rem;
-            font-weight: 600;
-            border: 1px solid rgba(120, 150, 220, 0.25);
-            cursor: pointer;
-            margin-top: 8px;
-            transition: transform 0.15s ease, box-shadow 0.2s ease, opacity 0.2s ease;
-        }
+    nav a:hover { color: var(--text-main); }
 
-        .gate-btn-confirm {
-            background: #454e63;
-            color: #cfd4e2;
-        }
+    nav a.active { color: var(--text-main); }
 
-        .gate-btn-confirm:not(:disabled):hover {
-            background: var(--bg-glow);
-            color: #fff;
-            box-shadow: 0 6px 18px rgba(76, 141, 255, 0.4);
-        }
+    nav a.active::after {
+        content: "";
+        position: absolute;
+        left: 0; right: 0; bottom: 0;
+        height: 2px;
+        border-radius: 2px;
+        background: linear-gradient(90deg, var(--accent), var(--accent-2));
+        box-shadow: 0 0 10px rgba(76,141,255,0.7);
+    }
 
-        .gate-btn-confirm:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
+    /* ================= FŐ TARTALOM ================= */
+    main {
+        position: relative;
+        z-index: 5;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 4vh 20px 8vh;
+        gap: 30px;
+    }
 
-        .gate-btn-leave {
-            background: transparent;
-            color: var(--text-dim);
-        }
+    .hero-title {
+        font-family: 'Space Grotesk', sans-serif;
+        font-weight: 700;
+        font-size: clamp(2.8rem, 9vw, 5rem);
+        letter-spacing: 0.05em;
+        color: #fff;
+        text-shadow: 0 0 40px rgba(76,141,255,0.65), 0 0 90px rgba(145,70,255,0.35);
+        text-align: center;
+        opacity: 0;
+        transform: translateY(-10px);
+        animation: dropIn 0.7s ease forwards 0.1s;
+    }
 
-        .gate-btn-leave:hover {
-            border-color: rgba(255,255,255,0.4);
-            color: var(--text-main);
-        }
+    @keyframes dropIn {
+        to { opacity: 1; transform: translateY(0); }
+    }
 
-        /* ================= FŐ TARTALOM ================= */
-        .browser-window {
-            width: 100%;
-            max-width: 420px;
-            background: var(--panel);
-            backdrop-filter: blur(18px);
-            -webkit-backdrop-filter: blur(18px);
-            border: 1px solid var(--panel-border);
-            border-radius: 16px;
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.45);
-            overflow: hidden;
-            opacity: 0;
-            transform: translateY(18px);
-            transition: opacity 0.5s ease, transform 0.5s ease;
-        }
+    /* ================= KÁRTYA ================= */
+    .browser-window {
+        width: 100%;
+        max-width: 420px;
+        background: var(--panel);
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+        border: 1px solid var(--panel-border);
+        border-radius: 16px;
+        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.45);
+        overflow: hidden;
+        opacity: 0;
+        transform: translateY(18px);
+        transition: opacity 0.5s ease, transform 0.5s ease;
+    }
 
-        /* Ha a JS nem futna le valamiért, sose maradjon örökre láthatatlan az oldal */
-        .no-js .browser-window {
-            opacity: 1;
-            transform: none;
-        }
+    .no-js .browser-window { opacity: 1; transform: none; }
+    .browser-window.reveal { opacity: 1; transform: translateY(0); }
 
-        .browser-window.reveal {
-            opacity: 1;
-            transform: translateY(0);
-        }
+    .browser-header {
+        background: rgba(255, 255, 255, 0.04);
+        padding: 10px 15px;
+        display: flex;
+        align-items: center;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
 
-        .browser-header {
-            background: rgba(255, 255, 255, 0.04);
-            padding: 10px 15px;
-            display: flex;
-            align-items: center;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-        }
+    .dots { display: flex; gap: 6px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot-red { background-color: #ff5f56; }
+    .dot-yellow { background-color: #ffbd2e; }
+    .dot-green { background-color: #27c93f; }
 
-        .dots { display: flex; gap: 6px; }
-        .dot { width: 10px; height: 10px; border-radius: 50%; }
-        .dot-red { background-color: #ff5f56; }
-        .dot-yellow { background-color: #ffbd2e; }
-        .dot-green { background-color: #27c93f; }
+    .content { padding: 34px 30px 28px; text-align: center; }
 
-        .content {
-            padding: 34px 30px 28px;
-            text-align: center;
-        }
+    .profile-container {
+        position: relative;
+        width: 108px;
+        height: 108px;
+        margin: 0 auto 16px;
+    }
 
-        .profile-container {
-            position: relative;
-            width: 108px;
-            height: 108px;
-            margin: 0 auto 16px;
-        }
+    .profile-img {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        object-fit: cover;
+        display: block;
+        background: linear-gradient(145deg, #2a3868, #1a2140);
+        border: 3px solid rgba(140, 170, 255, 0.55);
+        box-shadow: 0 0 0 6px rgba(76, 141, 255, 0.12), 0 8px 20px rgba(0,0,0,0.35);
+    }
 
-        .profile-img {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 3px solid rgba(140, 170, 255, 0.55);
-            box-shadow: 0 0 0 6px rgba(76, 141, 255, 0.12), 0 8px 20px rgba(0,0,0,0.35);
-        }
+    .profile-img svg { width: 60%; height: 60%; display: block; margin: 20% auto; }
 
-        .wordmark {
-            font-family: 'Space Grotesk', sans-serif;
-            font-weight: 700;
-            font-size: 1.6rem;
-            letter-spacing: 0.06em;
-            color: var(--text-main);
-            text-shadow: 0 0 18px rgba(76, 141, 255, 0.55);
-            margin-bottom: 4px;
-        }
+    .wordmark {
+        font-family: 'Space Grotesk', sans-serif;
+        font-weight: 700;
+        font-size: 1.6rem;
+        letter-spacing: 0.06em;
+        color: var(--text-main);
+        margin-bottom: 4px;
+    }
 
-        .subtitle {
-            font-size: 0.8rem;
-            color: var(--text-dim);
-            letter-spacing: 0.04em;
-            margin-bottom: 26px;
-        }
+    .subtitle {
+        font-size: 0.8rem;
+        color: var(--text-dim);
+        letter-spacing: 0.04em;
+        margin-bottom: 26px;
+    }
 
-        .links-list {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
+    .links-list { display: flex; flex-direction: column; gap: 12px; }
 
-        .link-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            text-decoration: none;
-            padding: 13px 20px;
-            border-radius: 10px;
-            font-size: 0.92rem;
-            font-family: 'Inter', sans-serif;
-            font-weight: 500;
-            color: #ffffff;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
-            transition: transform 0.2s ease, box-shadow 0.25s ease, background 0.25s ease;
-        }
+    .link-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        text-decoration: none;
+        padding: 13px 20px;
+        border-radius: 10px;
+        font-size: 0.92rem;
+        font-family: 'Inter', sans-serif;
+        font-weight: 500;
+        color: #ffffff;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.1);
+        transition: transform 0.2s ease, box-shadow 0.25s ease, background 0.25s ease;
+    }
 
-        .link-btn:hover {
-            transform: translateY(-3px);
-        }
+    .link-btn:hover { transform: translateY(-3px); }
+    .link-btn svg { width: 18px; height: 18px; flex-shrink: 0; }
 
-        .btn-discord:hover { background: #5865F2; box-shadow: 0 8px 22px rgba(88, 101, 242, 0.45); }
-        .btn-twitch:hover  { background: #9146FF; box-shadow: 0 8px 22px rgba(145, 70, 255, 0.45); }
-        .btn-telegram:hover{ background: #26A5E4; box-shadow: 0 8px 22px rgba(38, 165, 228, 0.45); }
-        .btn-email:hover   { background: #EA4335; box-shadow: 0 8px 22px rgba(234, 67, 53, 0.45); }
+    .btn-discord:hover  { background: #5865F2; box-shadow: 0 8px 22px rgba(88, 101, 242, 0.45); }
+    .btn-twitch:hover   { background: #9146FF; box-shadow: 0 8px 22px rgba(145, 70, 255, 0.45); }
+    .btn-telegram:hover { background: #26A5E4; box-shadow: 0 8px 22px rgba(38, 165, 228, 0.45); }
+    .btn-email:hover    { background: #EA4335; box-shadow: 0 8px 22px rgba(234, 67, 53, 0.45); }
 
-        .link-icon {
-            width: 20px;
-            height: 20px;
-            object-fit: contain;
-        }
-    </style>
+    .tagline {
+        text-align: center;
+        color: var(--text-dim);
+        font-size: 0.85rem;
+        line-height: 1.6;
+    }
+
+    .tagline strong { color: var(--text-main); font-weight: 600; }
+
+    /* ================= VERIFIKÁCIÓS KAPU ================= */
+    .gate-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(3, 5, 12, 0.88);
+        backdrop-filter: blur(6px);
+        -webkit-backdrop-filter: blur(6px);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 100;
+        padding: 20px;
+        opacity: 1;
+        transition: opacity 0.35s ease;
+    }
+
+    .gate-overlay.hidden { opacity: 0; pointer-events: none; }
+
+    .gate-card {
+        width: 100%;
+        max-width: 360px;
+        background: #0c1020;
+        border: 1px solid rgba(120, 150, 220, 0.25);
+        border-radius: 16px;
+        padding: 32px 28px 26px;
+        text-align: center;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    }
+
+    .gate-badge {
+        width: 56px;
+        height: 56px;
+        margin: 0 auto 18px;
+        border-radius: 50%;
+        border: 2px solid var(--text-main);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Space Grotesk', sans-serif;
+        font-weight: 700;
+        font-size: 1.1rem;
+    }
+
+    .gate-card h2 { font-family: 'Space Grotesk', sans-serif; font-size: 1.3rem; margin-bottom: 20px; }
+
+    .gate-check {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        text-align: left;
+        font-size: 0.88rem;
+        color: var(--text-dim);
+        margin-bottom: 12px;
+        cursor: pointer;
+    }
+
+    .gate-check input {
+        margin-top: 2px;
+        accent-color: var(--accent);
+        width: 15px;
+        height: 15px;
+        flex-shrink: 0;
+    }
+
+    .gate-btn {
+        width: 100%;
+        padding: 12px;
+        border-radius: 8px;
+        font-family: 'Inter', sans-serif;
+        font-size: 0.92rem;
+        font-weight: 600;
+        border: 1px solid rgba(120, 150, 220, 0.25);
+        cursor: pointer;
+        margin-top: 8px;
+        transition: transform 0.15s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+    }
+
+    .gate-btn-confirm { background: #454e63; color: #cfd4e2; }
+    .gate-btn-confirm:not(:disabled):hover { background: var(--accent); color: #fff; box-shadow: 0 6px 18px rgba(76, 141, 255, 0.4); }
+    .gate-btn-confirm:disabled { opacity: 0.5; cursor: not-allowed; }
+    .gate-btn-leave { background: transparent; color: var(--text-dim); }
+    .gate-btn-leave:hover { border-color: rgba(255,255,255,0.4); color: var(--text-main); }
+
+    footer {
+        position: relative;
+        z-index: 5;
+        text-align: center;
+        padding: 0 20px 30px;
+        font-size: 0.72rem;
+        color: rgba(144, 160, 200, 0.5);
+    }
+</style>
 </head>
 <body class="no-js">
 
-    <!-- ================= VERIFIKÁCIÓS KAPU ================= -->
-    <div class="gate-overlay" id="gateOverlay">
-        <div class="gate-card">
-            <div class="gate-badge">18+</div>
-            <h2>Access Verification</h2>
+<div class="bg"></div>
+<div class="watermark" aria-hidden="true">
+    <span>casi &middot; portfólió &middot; linkek &middot; casi &middot; portfólió &middot; linkek &middot; casi</span>
+    <span>portfólió &middot; linkek &middot; casi &middot; portfólió &middot; linkek &middot; casi &middot; portfólió</span>
+    <span>linkek &middot; casi &middot; portfólió &middot; linkek &middot; casi &middot; portfólió &middot; linkek</span>
+    <span>casi &middot; portfólió &middot; linkek &middot; casi &middot; portfólió &middot; linkek &middot; casi</span>
+</div>
 
-            <label class="gate-check">
-                <input type="checkbox" id="chkAge">
-                I confirm I am 18 or older.
-            </label>
-            <label class="gate-check">
-                <input type="checkbox" id="chkRegion">
-                I am outside Hungary.
-            </label>
-
-            <button class="gate-btn gate-btn-confirm" id="btnConfirm" disabled>Confirm, Enter</button>
-            <button class="gate-btn gate-btn-leave" id="btnLeave">No, take me away!</button>
-        </div>
+<!-- ================= VERIFIKÁCIÓS KAPU ================= -->
+<div class="gate-overlay" id="gateOverlay">
+    <div class="gate-card">
+        <div class="gate-badge">18+</div>
+        <h2>Access Verification</h2>
+        <label class="gate-check">
+            <input type="checkbox" id="chkAge">
+            I confirm I am 18 or older.
+        </label>
+        <label class="gate-check">
+            <input type="checkbox" id="chkRegion">
+            I am outside Hungary.
+        </label>
+        <button class="gate-btn gate-btn-confirm" id="btnConfirm" disabled>Confirm, Enter</button>
+        <button class="gate-btn gate-btn-leave" id="btnLeave">No, take me away!</button>
     </div>
+</div>
 
-    <!-- ================= FŐ TARTALOM ================= -->
+<nav>
+    <a href="#" class="active">FŐOLDAL</a>
+    <a href="#">RÓLAM</a>
+    <a href="#">MUNKÁK</a>
+    <a href="#">KAPCSOLAT</a>
+</nav>
+
+<main>
+    <div class="hero-title">CASI</div>
+
+    <!-- ================= KÁRTYA ================= -->
     <div class="browser-window" id="mainCard">
         <div class="browser-header">
             <div class="dots">
@@ -301,7 +387,12 @@ cat > /home/claude/site/index.html << 'HTMLEOF'
 
         <div class="content">
             <div class="profile-container">
-                <img src="pfp.png" alt="Profilkép" class="profile-img">
+                <div class="profile-img">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#8ca8ff" stroke-width="1.5">
+                        <circle cx="12" cy="8" r="4"></circle>
+                        <path d="M4 20c0-4.4 3.6-7 8-7s8 2.6 8 7"></path>
+                    </svg>
+                </div>
             </div>
 
             <div class="wordmark">CASI</div>
@@ -309,64 +400,74 @@ cat > /home/claude/site/index.html << 'HTMLEOF'
 
             <div class="links-list">
                 <a href="https://discord.gg/kNU6CpUC5Q" target="_blank" class="link-btn btn-discord">
-                    <img src="discord-logo.png" alt="Discord" class="link-icon"> Discord (casi)
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.3 4.4A19.8 19.8 0 0 0 15.6 3c-.2.4-.5.9-.7 1.4a18.3 18.3 0 0 0-5.8 0A9 9 0 0 0 8.4 3a19.8 19.8 0 0 0-4.7 1.5C1 8.7.3 12.8.6 16.9a20 20 0 0 0 6 3c.5-.6.9-1.3 1.2-2a13 13 0 0 1-1.9-.9l.5-.4a14.3 14.3 0 0 0 12.2 0l.5.4c-.6.4-1.2.6-1.9.9.3.7.7 1.4 1.2 2a20 20 0 0 0 6-3c.4-4.7-.8-8.8-3.1-12.5ZM9 14.6c-.9 0-1.6-.8-1.6-1.8S8.1 11 9 11s1.7.8 1.6 1.8c0 1-.7 1.8-1.6 1.8Zm6 0c-.9 0-1.6-.8-1.6-1.8S14.1 11 15 11s1.7.8 1.6 1.8c0 1-.7 1.8-1.6 1.8Z"/></svg>
+                    Discord (casi)
                 </a>
                 <a href="https://www.twitch.tv/srccxd" target="_blank" class="link-btn btn-twitch">
-                    <img src="twitch-logo.png" alt="Twitch" class="link-icon"> Twitch (srccxd)
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 2 2 6.5V19h6V22h3.5L14.5 19H19l3-3V2H4Zm16 13-2 2h-4l-2.5 2.5V17H6V4h14v11Zm-3-7h-2v5h2V8Zm-5 0H10v5h2V8Z"/></svg>
+                    Twitch (srccxd)
                 </a>
                 <a href="https://t.me/srccxd" target="_blank" class="link-btn btn-telegram">
-                    <img src="telegram-logo.png" alt="Telegram" class="link-icon"> Telegram (srccxd)
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.9 4.3 18.6 20c-.2 1-.9 1.3-1.7.8l-4.8-3.5-2.3 2.2c-.3.3-.5.5-1 .5l.3-4.9L18 6.7c.4-.4-.1-.6-.6-.2L6.7 13.7 2 12.2c-1-.3-1-1 .2-1.5L20.6 3.3c.8-.3 1.6.2 1.3 1Z"/></svg>
+                    Telegram (srccxd)
                 </a>
                 <a href="mailto:sourceid18@gmail.com" class="link-btn btn-email">
-                    <img src="gmail-logo.png" alt="Email" class="link-icon"> Business email
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M2 5h20v14H2V5Zm2 1v.4l8 5.6 8-5.6V6H4Zm16 2.5-7.4 5.2a1 1 0 0 1-1.2 0L4 8.5V18h16V8.5Z"/></svg>
+                    Business email
                 </a>
             </div>
         </div>
     </div>
 
-    <script>
-        document.body.classList.remove('no-js');
+    <p class="tagline">
+        <strong>A holnap kreatív jövője, ma.</strong><br>
+        (The creative future of tomorrow, today.)
+    </p>
+</main>
 
-        document.addEventListener('DOMContentLoaded', function () {
-            var chkAge = document.getElementById('chkAge');
-            var chkRegion = document.getElementById('chkRegion');
-            var btnConfirm = document.getElementById('btnConfirm');
-            var btnLeave = document.getElementById('btnLeave');
-            var gateOverlay = document.getElementById('gateOverlay');
-            var mainCard = document.getElementById('mainCard');
+<footer>&copy; <span id="year"></span> casi</footer>
 
-            function updateConfirmState() {
-                btnConfirm.disabled = !(chkAge.checked && chkRegion.checked);
-            }
-            chkAge.addEventListener('change', updateConfirmState);
-            chkRegion.addEventListener('change', updateConfirmState);
+<script>
+    document.body.classList.remove('no-js');
+    document.getElementById('year').textContent = new Date().getFullYear();
 
-            function enterSite() {
-                gateOverlay.classList.add('hidden');
-                mainCard.classList.add('reveal');
-                try { localStorage.setItem('casi_verified', '1'); } catch (e) {}
-                setTimeout(function () { gateOverlay.style.display = 'none'; }, 400);
-            }
+    document.addEventListener('DOMContentLoaded', function () {
+        var chkAge = document.getElementById('chkAge');
+        var chkRegion = document.getElementById('chkRegion');
+        var btnConfirm = document.getElementById('btnConfirm');
+        var btnLeave = document.getElementById('btnLeave');
+        var gateOverlay = document.getElementById('gateOverlay');
+        var mainCard = document.getElementById('mainCard');
 
-            btnConfirm.addEventListener('click', function () {
-                if (!btnConfirm.disabled) enterSite();
-            });
+        function updateConfirmState() {
+            btnConfirm.disabled = !(chkAge.checked && chkRegion.checked);
+        }
+        chkAge.addEventListener('change', updateConfirmState);
+        chkRegion.addEventListener('change', updateConfirmState);
 
-            btnLeave.addEventListener('click', function () {
-                window.location.href = 'https://www.google.com';
-            });
+        function enterSite() {
+            gateOverlay.classList.add('hidden');
+            mainCard.classList.add('reveal');
+            try { localStorage.setItem('casi_verified', '1'); } catch (e) {}
+            setTimeout(function () { gateOverlay.style.display = 'none'; }, 400);
+        }
 
-            // Ha korábban már megerősítette, ne kérdezze újra ugyanabban a böngészőben
-            var alreadyVerified = false;
-            try { alreadyVerified = localStorage.getItem('casi_verified') === '1'; } catch (e) {}
-            if (alreadyVerified) {
-                gateOverlay.style.display = 'none';
-                mainCard.classList.add('reveal');
-            }
+        btnConfirm.addEventListener('click', function () {
+            if (!btnConfirm.disabled) enterSite();
         });
-    </script>
+
+        btnLeave.addEventListener('click', function () {
+            window.location.href = 'https://www.google.com';
+        });
+
+        var alreadyVerified = false;
+        try { alreadyVerified = localStorage.getItem('casi_verified') === '1'; } catch (e) {}
+        if (alreadyVerified) {
+            gateOverlay.style.display = 'none';
+            mainCard.classList.add('reveal');
+        }
+    });
+</script>
 
 </body>
 </html>
-HTMLEOF
-echo "done"
