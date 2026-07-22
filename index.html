@@ -202,14 +202,51 @@
     .btn-telegram:hover { background: #26A5E4; box-shadow: 0 8px 22px rgba(38, 165, 228, 0.45); }
     .btn-email:hover    { background: #EA4335; box-shadow: 0 8px 22px rgba(234, 67, 53, 0.45); }
 
-    .tagline {
+    .about {
+        width: 100%;
+        max-width: 420px;
+        background: var(--panel);
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+        border: 1px solid var(--panel-border);
+        border-radius: 16px;
+        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.45);
+        padding: 26px 28px 30px;
         text-align: center;
-        color: var(--text-dim);
-        font-size: 0.85rem;
-        line-height: 1.6;
     }
 
-    .tagline strong { color: var(--text-main); font-weight: 600; }
+    .about-title {
+        font-family: 'Space Grotesk', sans-serif;
+        font-weight: 700;
+        font-size: 1.1rem;
+        letter-spacing: 0.1em;
+        color: var(--text-main);
+        margin-bottom: 14px;
+    }
+
+    .about-title::after {
+        content: "";
+        display: block;
+        width: 36px;
+        height: 2px;
+        margin: 10px auto 0;
+        border-radius: 2px;
+        background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    }
+
+    .about-text {
+        color: var(--text-dim);
+        font-size: 0.88rem;
+        line-height: 1.65;
+    }
+
+    .about-text + .about-text {
+        margin-top: 14px;
+        padding-top: 14px;
+        border-top: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .about-text strong { color: var(--text-main); font-weight: 600; }
 
     /* ================= VERIFIKÁCIÓS KAPU ================= */
     .gate-overlay {
@@ -327,13 +364,11 @@
 </div>
 
 <nav>
-    <a href="#" class="active">FŐOLDAL</a>
-    <a href="#">RÓLAM</a>
-    <a href="#">MUNKÁK</a>
-    <a href="#">KAPCSOLAT</a>
+    <a href="#top" class="active">FŐOLDAL</a>
+    <a href="#rolam">RÓLAM</a>
 </nav>
 
-<main>
+<main id="top">
     <div class="hero-title">CASI</div>
 
     <!-- ================= KÁRTYA ================= -->
@@ -371,10 +406,18 @@
         </div>
     </div>
 
-    <p class="tagline">
-        <strong>A holnap kreatív jövője, ma.</strong><br>
-        (The creative future of tomorrow, today.)
-    </p>
+    <section class="about" id="rolam">
+        <h2 class="about-title">RÓLAM</h2>
+        <p class="about-text">
+            Szia, <strong>Casi</strong> vagyok! Streamelek és játszom, elsősorban közösségi és kreatív projekteken dolgozom —
+            játékmenet, klipek, és élő beszélgetések a közösséggel. Szívesen próbálok ki új játékokat,
+            és a Discord szerverem a hely, ahol a stream mellett is összegyűlünk.
+        </p>
+        <p class="about-text about-text-en">
+            Hey, I'm <strong>Casi</strong>! I stream and play games, mixing gameplay, clips, and live chats with the community.
+            Always up for trying new titles — join the Discord to hang out between streams.
+        </p>
+    </section>
 </main>
 
 <footer>&copy; <span id="year"></span> casi</footer>
