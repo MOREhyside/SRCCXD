@@ -1,9 +1,12 @@
+cat > /home/claude/site/index.html << 'HTMLEOF'
 <!DOCTYPE html>
 <html lang="hu">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Discord (casi)</title>
+    <title>casi</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         * {
             box-sizing: border-box;
@@ -11,13 +14,20 @@
             padding: 0;
         }
 
+        :root {
+            --bg-glow: #4c8dff;
+            --panel: rgba(10, 14, 26, 0.62);
+            --panel-border: rgba(120, 150, 220, 0.28);
+            --text-main: #eef1fb;
+            --text-dim: #9aa4c2;
+        }
+
         body {
-            /* Háttér beállítása helyi bg.jpg fájlra */
-            background: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.2)), 
+            background: linear-gradient(rgba(4, 6, 14, 0.55), rgba(4, 6, 14, 0.55)),
                         url('bg.jpg') no-repeat center center fixed;
             background-size: cover;
-            font-family: 'Georgia', serif;
-            color: #2c3e50;
+            font-family: 'Inter', sans-serif;
+            color: var(--text-main);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -25,52 +35,171 @@
             padding: 20px;
         }
 
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { transition: none !important; }
+        }
+
+        /* ================= VERIFIKÁCIÓS KAPU ================= */
+        .gate-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(3, 5, 12, 0.88);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            padding: 20px;
+            opacity: 1;
+            transition: opacity 0.35s ease;
+        }
+
+        .gate-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .gate-card {
+            width: 100%;
+            max-width: 360px;
+            background: #0c1020;
+            border: 1px solid rgba(120, 150, 220, 0.25);
+            border-radius: 16px;
+            padding: 32px 28px 26px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+
+        .gate-badge {
+            width: 56px;
+            height: 56px;
+            margin: 0 auto 18px;
+            border-radius: 50%;
+            border: 2px solid var(--text-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .gate-card h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+        }
+
+        .gate-check {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            text-align: left;
+            font-size: 0.88rem;
+            color: var(--text-dim);
+            margin-bottom: 12px;
+            cursor: pointer;
+        }
+
+        .gate-check input {
+            margin-top: 2px;
+            accent-color: var(--bg-glow);
+            width: 15px;
+            height: 15px;
+            flex-shrink: 0;
+        }
+
+        .gate-btn {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.92rem;
+            font-weight: 600;
+            border: 1px solid rgba(120, 150, 220, 0.25);
+            cursor: pointer;
+            margin-top: 8px;
+            transition: transform 0.15s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+        }
+
+        .gate-btn-confirm {
+            background: #454e63;
+            color: #cfd4e2;
+        }
+
+        .gate-btn-confirm:not(:disabled):hover {
+            background: var(--bg-glow);
+            color: #fff;
+            box-shadow: 0 6px 18px rgba(76, 141, 255, 0.4);
+        }
+
+        .gate-btn-confirm:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .gate-btn-leave {
+            background: transparent;
+            color: var(--text-dim);
+        }
+
+        .gate-btn-leave:hover {
+            border-color: rgba(255,255,255,0.4);
+            color: var(--text-main);
+        }
+
+        /* ================= FŐ TARTALOM ================= */
         .browser-window {
             width: 100%;
-            max-width: 500px;
-            background: rgba(255, 255, 255, 0.25);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            border-radius: 12px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            max-width: 420px;
+            background: var(--panel);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border: 1px solid var(--panel-border);
+            border-radius: 16px;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.45);
             overflow: hidden;
+            opacity: 0;
+            transform: translateY(18px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        /* Ha a JS nem futna le valamiért, sose maradjon örökre láthatatlan az oldal */
+        .no-js .browser-window {
+            opacity: 1;
+            transform: none;
+        }
+
+        .browser-window.reveal {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .browser-header {
-            background: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.04);
             padding: 10px 15px;
             display: flex;
             align-items: center;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
         }
 
-        .dots {
-            display: flex;
-            gap: 6px;
-        }
-
-        .dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-        }
-
+        .dots { display: flex; gap: 6px; }
+        .dot { width: 10px; height: 10px; border-radius: 50%; }
         .dot-red { background-color: #ff5f56; }
         .dot-yellow { background-color: #ffbd2e; }
         .dot-green { background-color: #27c93f; }
 
         .content {
-            padding: 35px 30px 25px 30px;
+            padding: 34px 30px 28px;
             text-align: center;
         }
 
-        /* Profilkép konténer */
         .profile-container {
             position: relative;
-            width: 110px;
-            height: 110px;
-            margin: 0 auto 25px auto;
+            width: 108px;
+            height: 108px;
+            margin: 0 auto 16px;
         }
 
         .profile-img {
@@ -78,8 +207,25 @@
             height: 100%;
             border-radius: 50%;
             object-fit: cover;
-            border: 3px solid rgba(255, 255, 255, 0.8);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            border: 3px solid rgba(140, 170, 255, 0.55);
+            box-shadow: 0 0 0 6px rgba(76, 141, 255, 0.12), 0 8px 20px rgba(0,0,0,0.35);
+        }
+
+        .wordmark {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 1.6rem;
+            letter-spacing: 0.06em;
+            color: var(--text-main);
+            text-shadow: 0 0 18px rgba(76, 141, 255, 0.55);
+            margin-bottom: 4px;
+        }
+
+        .subtitle {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            letter-spacing: 0.04em;
+            margin-bottom: 26px;
         }
 
         .links-list {
@@ -95,49 +241,56 @@
             gap: 10px;
             text-decoration: none;
             padding: 13px 20px;
-            border-radius: 6px;
-            font-size: 0.95rem;
-            font-family: 'Segoe UI', Tahoma, sans-serif;
+            border-radius: 10px;
+            font-size: 0.92rem;
+            font-family: 'Inter', sans-serif;
             font-weight: 500;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            color: #ffffff;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: transform 0.2s ease, box-shadow 0.25s ease, background 0.25s ease;
         }
 
         .link-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            transform: translateY(-3px);
         }
 
-        .btn-discord {
-            background-color: #5865F2;
-            color: #ffffff;
-        }
-
-        .btn-twitch {
-            background-color: #9146FF;
-            color: #ffffff;
-        }
-
-        .btn-telegram {
-            background-color: #26A5E4;
-            color: #ffffff;
-        }
-
-        .btn-email {
-            background-color: #EA4335;
-            color: #ffffff;
-        }
+        .btn-discord:hover { background: #5865F2; box-shadow: 0 8px 22px rgba(88, 101, 242, 0.45); }
+        .btn-twitch:hover  { background: #9146FF; box-shadow: 0 8px 22px rgba(145, 70, 255, 0.45); }
+        .btn-telegram:hover{ background: #26A5E4; box-shadow: 0 8px 22px rgba(38, 165, 228, 0.45); }
+        .btn-email:hover   { background: #EA4335; box-shadow: 0 8px 22px rgba(234, 67, 53, 0.45); }
 
         .link-icon {
-            width: 22px;
-            height: 22px;
+            width: 20px;
+            height: 20px;
             object-fit: contain;
         }
     </style>
 </head>
-<body>
+<body class="no-js">
 
-    <div class="browser-window">
+    <!-- ================= VERIFIKÁCIÓS KAPU ================= -->
+    <div class="gate-overlay" id="gateOverlay">
+        <div class="gate-card">
+            <div class="gate-badge">18+</div>
+            <h2>Access Verification</h2>
+
+            <label class="gate-check">
+                <input type="checkbox" id="chkAge">
+                I confirm I am 18 or older.
+            </label>
+            <label class="gate-check">
+                <input type="checkbox" id="chkRegion">
+                I am outside Hungary.
+            </label>
+
+            <button class="gate-btn gate-btn-confirm" id="btnConfirm" disabled>Confirm, Enter</button>
+            <button class="gate-btn gate-btn-leave" id="btnLeave">No, take me away!</button>
+        </div>
+    </div>
+
+    <!-- ================= FŐ TARTALOM ================= -->
+    <div class="browser-window" id="mainCard">
         <div class="browser-header">
             <div class="dots">
                 <div class="dot dot-red"></div>
@@ -147,10 +300,12 @@
         </div>
 
         <div class="content">
-            <!-- Profilkép (pfp.png) -->
             <div class="profile-container">
                 <img src="pfp.png" alt="Profilkép" class="profile-img">
             </div>
+
+            <div class="wordmark">CASI</div>
+            <div class="subtitle">srccxd</div>
 
             <div class="links-list">
                 <a href="https://discord.gg/kNU6CpUC5Q" target="_blank" class="link-btn btn-discord">
@@ -169,5 +324,49 @@
         </div>
     </div>
 
+    <script>
+        document.body.classList.remove('no-js');
+
+        document.addEventListener('DOMContentLoaded', function () {
+            var chkAge = document.getElementById('chkAge');
+            var chkRegion = document.getElementById('chkRegion');
+            var btnConfirm = document.getElementById('btnConfirm');
+            var btnLeave = document.getElementById('btnLeave');
+            var gateOverlay = document.getElementById('gateOverlay');
+            var mainCard = document.getElementById('mainCard');
+
+            function updateConfirmState() {
+                btnConfirm.disabled = !(chkAge.checked && chkRegion.checked);
+            }
+            chkAge.addEventListener('change', updateConfirmState);
+            chkRegion.addEventListener('change', updateConfirmState);
+
+            function enterSite() {
+                gateOverlay.classList.add('hidden');
+                mainCard.classList.add('reveal');
+                try { localStorage.setItem('casi_verified', '1'); } catch (e) {}
+                setTimeout(function () { gateOverlay.style.display = 'none'; }, 400);
+            }
+
+            btnConfirm.addEventListener('click', function () {
+                if (!btnConfirm.disabled) enterSite();
+            });
+
+            btnLeave.addEventListener('click', function () {
+                window.location.href = 'https://www.google.com';
+            });
+
+            // Ha korábban már megerősítette, ne kérdezze újra ugyanabban a böngészőben
+            var alreadyVerified = false;
+            try { alreadyVerified = localStorage.getItem('casi_verified') === '1'; } catch (e) {}
+            if (alreadyVerified) {
+                gateOverlay.style.display = 'none';
+                mainCard.classList.add('reveal');
+            }
+        });
+    </script>
+
 </body>
 </html>
+HTMLEOF
+echo "done"
