@@ -43,42 +43,6 @@
         *, *::before, *::after { transition: none !important; animation: none !important; }
     }
 
-    /* ================= NAVIGÁCIÓ ================= */
-    nav {
-        position: relative;
-        z-index: 5;
-        display: flex;
-        justify-content: center;
-        gap: clamp(20px, 5vw, 48px);
-        padding: 26px 20px 10px;
-        font-family: 'Space Grotesk', sans-serif;
-        font-size: 0.82rem;
-        font-weight: 600;
-        letter-spacing: 0.08em;
-    }
-
-    nav a {
-        color: var(--text-dim);
-        text-decoration: none;
-        position: relative;
-        padding-bottom: 6px;
-        transition: color 0.2s ease;
-    }
-
-    nav a:hover { color: var(--text-main); }
-
-    nav a.active { color: var(--text-main); }
-
-    nav a.active::after {
-        content: "";
-        position: absolute;
-        left: 0; right: 0; bottom: 0;
-        height: 2px;
-        border-radius: 2px;
-        background: linear-gradient(90deg, var(--accent), var(--accent-2));
-        box-shadow: 0 0 10px rgba(76,141,255,0.7);
-    }
-
     /* ================= FŐ TARTALOM ================= */
     main {
         position: relative;
@@ -202,53 +166,6 @@
     .btn-telegram:hover { background: #26A5E4; box-shadow: 0 8px 22px rgba(38, 165, 228, 0.45); }
     .btn-email:hover    { background: #EA4335; box-shadow: 0 8px 22px rgba(234, 67, 53, 0.45); }
 
-    .about {
-        width: 100%;
-        max-width: 420px;
-        background: var(--panel);
-        backdrop-filter: blur(18px);
-        -webkit-backdrop-filter: blur(18px);
-        border: 1px solid var(--panel-border);
-        border-radius: 16px;
-        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.45);
-        padding: 26px 28px 30px;
-        text-align: center;
-    }
-
-    .about-title {
-        font-family: 'Space Grotesk', sans-serif;
-        font-weight: 700;
-        font-size: 1.1rem;
-        letter-spacing: 0.1em;
-        color: var(--text-main);
-        margin-bottom: 14px;
-    }
-
-    .about-title::after {
-        content: "";
-        display: block;
-        width: 36px;
-        height: 2px;
-        margin: 10px auto 0;
-        border-radius: 2px;
-        background: linear-gradient(90deg, var(--accent), var(--accent-2));
-    }
-
-    .about-text {
-        color: var(--text-dim);
-        font-size: 0.88rem;
-        line-height: 1.65;
-    }
-
-    .about-text + .about-text {
-        margin-top: 14px;
-        padding-top: 14px;
-        border-top: 1px solid rgba(255,255,255,0.06);
-    }
-
-    .about-text strong { color: var(--text-main); font-weight: 600; }
-
-    /* ================= VERIFIKÁCIÓS KAPU ================= */
     .gate-overlay {
         position: fixed;
         inset: 0;
@@ -363,11 +280,6 @@
     </div>
 </div>
 
-<nav>
-    <a href="#top" class="active">FŐOLDAL</a>
-    <a href="#rolam">RÓLAM</a>
-</nav>
-
 <main id="top">
     <div class="hero-title">CASI</div>
 
@@ -405,16 +317,6 @@
             </div>
         </div>
     </div>
-
-    <section class="about" id="rolam">
-        <h2 class="about-title">RÓLAM</h2>
-        <p class="about-text">
-            Szia, <strong>srcc</strong> vagyok! Streamelek, játszom, és jókat beszélgetünk közben. Gyere be a Discordra! 🎮
-        </p>
-        <p class="about-text about-text-en">
-            Hey, I'm <strong>srcc</strong>! I stream, play games, and hang out with chat. Join the Discord!
-        </p>
-    </section>
 </main>
 
 <footer>&copy; <span id="year"></span> casi</footer>
