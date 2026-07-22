@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discord (casi)</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            /* Háttér beállítása helyi bg.jpg fájlra */
+            background: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.2)), 
+                        url('bg.jpg') no-repeat center center fixed;
+            background-size: cover;
+            font-family: 'Georgia', serif;
+            color: #2c3e50;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .browser-window {
+            width: 100%;
+            max-width: 500px;
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .browser-header {
+            background: rgba(255, 255, 255, 0.3);
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .dots {
+            display: flex;
+            gap: 6px;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .dot-red { background-color: #ff5f56; }
+        .dot-yellow { background-color: #ffbd2e; }
+        .dot-green { background-color: #27c93f; }
+
+        .content {
+            padding: 35px 30px 25px 30px;
+            text-align: center;
+        }
+
+        /* Profilkép konténer */
+        .profile-container {
+            position: relative;
+            width: 110px;
+            height: 110px;
+            margin: 0 auto 25px auto;
+        }
+
+        .profile-img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .links-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .link-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            text-decoration: none;
+            padding: 13px 20px;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            font-weight: 500;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .link-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .btn-discord {
+            background-color: #5865F2;
+            color: #ffffff;
+        }
+
+        .btn-twitch {
+            background-color: #9146FF;
+            color: #ffffff;
+        }
+
+        .btn-telegram {
+            background-color: #26A5E4;
+            color: #ffffff;
+        }
+
+        .btn-email {
+            background-color: #EA4335;
+            color: #ffffff;
+        }
+
+        .link-icon {
+            width: 22px;
+            height: 22px;
+            object-fit: contain;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="browser-window">
+        <div class="browser-header">
+            <div class="dots">
+                <div class="dot dot-red"></div>
+                <div class="dot dot-yellow"></div>
+                <div class="dot dot-green"></div>
+            </div>
+        </div>
+
+        <div class="content">
+            <!-- Profilkép (pfp.png) -->
+            <div class="profile-container">
+                <img src="pfp.png" alt="Profilkép" class="profile-img">
+            </div>
+
+            <div class="links-list">
+                <a href="https://discord.gg/kNU6CpUC5Q" target="_blank" class="link-btn btn-discord">
+                    <img src="discord-logo.png" alt="Discord" class="link-icon"> Discord (casi)
+                </a>
+                <a href="https://www.twitch.tv/srccxd" target="_blank" class="link-btn btn-twitch">
+                    <img src="twitch-logo.png" alt="Twitch" class="link-icon"> Twitch (srccxd)
+                </a>
+                <a href="https://t.me/srccxd" target="_blank" class="link-btn btn-telegram">
+                    <img src="telegram-logo.png" alt="Telegram" class="link-icon"> Telegram (srccxd)
+                </a>
+                <a href="mailto:sourceid18@gmail.com" class="link-btn btn-email">
+                    <img src="gmail-logo.png" alt="Email" class="link-icon"> Business email
+                </a>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
