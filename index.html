@@ -221,7 +221,7 @@
         function loginWithTwitch() {
             try {
                 clearAuthStorage();
-                const authUrl = `https://id.twitch.tv/oauth2/authorize?client_id=${TWITCH_CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=token&scope=`;
+                const authUrl = `https://id.twitch.tv/oauth2/authorize?client_id=${TWITCH_CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=token&scope=user:read:email`;
                 window.location.href = authUrl;
             } catch (err) {
                 showUIError('Bejelentkezési hiba: ' + err.message);
