@@ -3,8 +3,22 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>casi</title>
+<title>casi — srccxd</title>
+<meta name="description" content="casi (srccxd) hivatalos linkjei — Discord, Twitch, Telegram és elérhetőség egy helyen.">
+
+<!-- Social preview (Discord / Telegram / Twitter beágyazáshoz) -->
+<meta property="og:title" content="casi — srccxd">
+<meta property="og:description" content="Discord, Twitch, Telegram és elérhetőség egy helyen.">
+<meta property="og:image" content="pfp.png">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="casi — srccxd">
+<meta name="twitter:image" content="pfp.png">
+<meta name="theme-color" content="#050814">
+<link rel="icon" href="pfp.png">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -34,13 +48,31 @@
         position: fixed;
         inset: 0;
         z-index: -2;
-        background: linear-gradient(rgba(4, 6, 14, 0.45), rgba(4, 6, 14, 0.45)),
-                    url('bg.jpg') no-repeat center center fixed;
+        overflow: hidden;
+        background: #050814 url('bg-poster.jpg') no-repeat center center;
         background-size: cover;
+    }
+
+    .bg::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: rgba(4, 6, 14, 0.45);
+        z-index: 1;
+    }
+
+    .bg-video {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
     }
 
     @media (prefers-reduced-motion: reduce) {
         *, *::before, *::after { transition: none !important; animation: none !important; }
+        /* mozgásérzékeny látogatóknak állókép a videó helyett */
+        .bg-video { display: none; }
     }
 
     /* ================= FŐ TARTALOM ================= */
@@ -139,7 +171,12 @@
         margin-bottom: 26px;
     }
 
-    .links-list { display: flex; flex-direction: column; gap: 12px; }
+    .links-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        list-style: none;
+    }
 
     .link-btn {
         display: flex;
@@ -159,13 +196,21 @@
     }
 
     .link-btn:hover { transform: translateY(-3px); }
-    
-    .link-icon { 
+
+    .link-btn:focus-visible,
+    .casino-btn:focus-visible,
+    .gate-btn:focus-visible,
+    .gate-check input:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 3px;
+    }
+
+    .link-icon {
         position: absolute;
         left: 16px;
-        width: 40px; 
-        height: 40px; 
-        object-fit: contain; 
+        width: 40px;
+        height: 40px;
+        object-fit: contain;
     }
 
     .btn-discord:hover  { background: #5865F2; box-shadow: 0 8px 22px rgba(88, 101, 242, 0.45); }
@@ -197,6 +242,19 @@
         padding-left: 5px;
     }
 
+    .ad-tag {
+        font-family: 'Inter', sans-serif;
+        font-size: 0.65rem;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--text-dim);
+        border: 1px solid var(--panel-border);
+        border-radius: 5px;
+        padding: 2px 7px;
+        margin-left: auto;
+    }
+
     .casino-grid {
         display: grid;
         grid-template-columns: 1fr;
@@ -224,10 +282,9 @@
         box-shadow: 0 20px 45px rgba(0, 229, 188, 0.15);
     }
 
-    /* Megnövelt logó méret */
     .casino-logo {
-        width: 100%;   
-        height: 160px; 
+        width: 100%;
+        height: 160px;
         object-fit: contain;
         display: block;
         margin: 0 auto;
@@ -239,6 +296,7 @@
         gap: 6px;
         font-size: 0.82rem;
         color: var(--text-dim);
+        list-style: none;
     }
 
     .casino-perk-item {
@@ -273,6 +331,12 @@
         box-shadow: 0 6px 20px rgba(0, 229, 188, 0.4);
     }
 
+    /* Nagyobb kijelzőn a kaszinó szekció rácsossá válhat, ha több kártya kerül bele */
+    @media (min-width: 700px) {
+        .casino-section { max-width: 900px; }
+        .casino-grid { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+    }
+
     /* ================= KAPU ================= */
     .gate-overlay {
         position: fixed;
@@ -290,6 +354,9 @@
     }
 
     .gate-overlay.hidden { opacity: 0; pointer-events: none; }
+
+    /* JS nélkül a kapu nem lenne bezárható, ezért ilyenkor inkább nem jelenik meg */
+    .no-js .gate-overlay { display: none; }
 
     .gate-card {
         width: 100%;
@@ -354,7 +421,7 @@
     .gate-btn-confirm:not(:disabled) { background: var(--accent); color: #050814; }
     .gate-btn-confirm:not(:disabled):hover { background: var(--accent-hover); box-shadow: 0 6px 18px rgba(0, 229, 188, 0.4); }
     .gate-btn-confirm:disabled { opacity: 0.5; cursor: not-allowed; }
-    
+
     .gate-btn-leave { background: transparent; color: var(--text-dim); }
     .gate-btn-leave:hover { border-color: rgba(255,255,255,0.4); color: var(--text-main); }
 
@@ -366,17 +433,42 @@
         font-size: 0.72rem;
         color: rgba(144, 160, 200, 0.5);
     }
+
+    .wallpaper-credit {
+        margin-top: 10px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .wallpaper-credit a { display: inline-block; }
+
+    .wallpaper-credit img {
+        width: 130px;
+        height: auto;
+        border-radius: 6px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        opacity: 0.85;
+        transition: opacity 0.2s ease;
+    }
+
+    .wallpaper-credit img:hover { opacity: 1; }
 </style>
 </head>
 <body class="no-js">
 
-<div class="bg"></div>
+<div class="bg">
+    <video class="bg-video" autoplay muted loop playsinline poster="bg-poster.jpg" aria-hidden="true">
+        <source src="bg-video.mp4" type="video/mp4">
+    </video>
+</div>
 
 <!-- ================= VERIFIKÁCIÓS KAPU ================= -->
-<div class="gate-overlay" id="gateOverlay">
+<div class="gate-overlay" id="gateOverlay" role="dialog" aria-modal="true" aria-labelledby="gateTitle">
     <div class="gate-card">
-        <div class="gate-badge">18+</div>
-        <h2>Access Verification</h2>
+        <div class="gate-badge" aria-hidden="true">18+</div>
+        <h2 id="gateTitle">Access Verification</h2>
         <label class="gate-check">
             <input type="checkbox" id="chkAge">
             I confirm I am 18 or older.
@@ -396,7 +488,7 @@
     <!-- ================= PROFIL KÁRTYA ================= -->
     <div class="browser-window" id="mainCard">
         <div class="browser-header">
-            <div class="dots">
+            <div class="dots" aria-hidden="true">
                 <div class="dot dot-red"></div>
                 <div class="dot dot-yellow"></div>
                 <div class="dot dot-green"></div>
@@ -405,55 +497,93 @@
 
         <div class="content">
             <div class="profile-container">
-                <img src="pfp.png" alt="Profilkép" class="profile-img">
+                <img src="pfp.png" alt="Profilkép" class="profile-img" width="108" height="108">
             </div>
 
             <div class="wordmark">CASI</div>
             <div class="subtitle">srccxd</div>
 
-            <div class="links-list">
-                <a href="https://discord.gg/kNU6CpUC5Q" target="_blank" class="link-btn btn-discord">
-                    <img src="discord-logo.png" alt="Discord" class="link-icon"> Discord (casi)
-                </a>
-                <a href="https://www.twitch.tv/srccxd" target="_blank" class="link-btn btn-twitch">
-                    <img src="twitch-logo.png" alt="Twitch" class="link-icon"> Twitch (srccxd)
-                </a>
-                <a href="https://t.me/srccxd" target="_blank" class="link-btn btn-telegram">
-                    <img src="telegram-logo.png" alt="Telegram" class="link-icon"> Telegram (srccxd)
-                </a>
-                <a href="mailto:sourceid18@gmail.com" class="link-btn btn-email">
-                    <img src="gmail-logo.png" alt="Email" class="link-icon"> Business email
-                </a>
-            </div>
+            <nav aria-label="Közösségi linkek">
+                <ul class="links-list">
+                    <li>
+                        <a href="https://discord.gg/kNU6CpUC5Q" target="_blank" rel="noopener noreferrer" class="link-btn btn-discord">
+                            <img src="discord-logo.png" alt="" class="link-icon" width="40" height="40" loading="lazy"> Discord (casi)
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.twitch.tv/srccxd" target="_blank" rel="noopener noreferrer" class="link-btn btn-twitch">
+                            <img src="twitch-logo.png" alt="" class="link-icon" width="40" height="40" loading="lazy"> Twitch (srccxd)
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://t.me/srccxd" target="_blank" rel="noopener noreferrer" class="link-btn btn-telegram">
+                            <img src="telegram-logo.png" alt="" class="link-icon" width="40" height="40" loading="lazy"> Telegram (srccxd)
+                        </a>
+                    </li>
+                    <li>
+                        <a href="mailto:sourceid18@gmail.com" class="link-btn btn-email">
+                            <img src="gmail-logo.png" alt="" class="link-icon" width="40" height="40" loading="lazy"> Business email
+                        </a>
+                    </li>
+                </ul>
+            </nav>
         </div>
     </div>
 
     <!-- ================= KASZINO SZEKCIÓ ================= -->
     <div class="casino-section" id="casinoSection">
-        <div class="section-header-title">🎰 Featured Casino</div>
-        
+        <div class="section-header-title">
+            🎰 Featured Casino
+            <span class="ad-tag">Hirdetés</span>
+        </div>
+
         <div class="casino-grid">
             <!-- SpinLine Kaszinó -->
             <div class="casino-card">
-                <img src="spinline-logo.png" alt="SpinLine" class="casino-logo">
-                <div class="casino-perks">
-                    <div class="casino-perk-item">Üdvözlő csomag</div>
-                    <div class="casino-perk-item">Akár 720 000 Ft</div>
-                    <div class="casino-perk-item">+ 800 Ingyenes Pörgetés</div>
-                </div>
-                <a href="https://spln.pleotra.com/?mid=382466_2215736" target="_blank" class="casino-btn">Játék most</a>
+                <img src="spinline-logo.png" alt="SpinLine" class="casino-logo" loading="lazy">
+                <ul class="casino-perks">
+                    <li class="casino-perk-item">Üdvözlő csomag</li>
+                    <li class="casino-perk-item">Akár 720 000 Ft</li>
+                    <li class="casino-perk-item">+ 800 Ingyenes Pörgetés</li>
+                </ul>
+                <a href="https://spln.pleotra.com/?mid=382466_2215736" target="_blank" rel="noopener noreferrer" class="casino-btn">Játék most</a>
             </div>
         </div>
     </div>
 </main>
 
-<footer>&copy; <span id="year"></span> casi</footer>
+<footer>
+    &copy; <span id="year"></span> casi
+    <div class="wallpaper-credit">
+        <a href="https://moewalls.com/anime/partners-goodbye-pokemon-z-live-wallpaper/" target="_blank" rel="noopener noreferrer">
+            <img src="https://moewalls.com/wp-content/uploads/2023/04/partners-goodbye-pokemon-thumb-728x305.jpg" title="Partners Goodbye Pokemon Live Wallpaper" alt="Partners Goodbye Pokemon Live Wallpaper">
+        </a>
+    </div>
+</footer>
 
 <script>
     document.body.classList.remove('no-js');
     document.getElementById('year').textContent = new Date().getFullYear();
 
     document.addEventListener('DOMContentLoaded', function () {
+        // Háttérvideó indítása — ha a böngésző (pl. Brave Shields, szigorú
+        // autoplay-szabályok) blokkolja, az első kattintásra/érintésre elindul.
+        var bgVideo = document.querySelector('.bg-video');
+        if (bgVideo) {
+            var startVideo = function () {
+                var playPromise = bgVideo.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(function () {
+                        var resume = function () { bgVideo.play(); };
+                        document.addEventListener('click', resume, { once: true });
+                        document.addEventListener('touchstart', resume, { once: true });
+                        document.addEventListener('keydown', resume, { once: true });
+                    });
+                }
+            };
+            startVideo();
+        }
+
         var chkAge = document.getElementById('chkAge');
         var chkRegion = document.getElementById('chkRegion');
         var btnConfirm = document.getElementById('btnConfirm');
@@ -473,6 +603,7 @@
             gateOverlay.classList.add('hidden');
             mainCard.classList.add('reveal');
             casinoSection.classList.add('reveal');
+            if (bgVideo) { bgVideo.play(); }
             setTimeout(function () { gateOverlay.style.display = 'none'; }, 400);
         }
 
