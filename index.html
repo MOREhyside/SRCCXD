@@ -4,22 +4,22 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>srccxd</title>
-<meta name="description" content="casi (srccxd) hivatalos linkjei — Discord, Twitch, Telegram, Instagram és elérhetőség egy helyen.">
+<meta name="description" content="casi (srccxd) hivatalos linkjei — Discord, Twitch, Telegram, Instagram és elérhetőség egy helyen[cite: 1].">
 
-<!-- Előbetöltések a jobb LCP és teljesítmény érdekében -->
+<!-- Előbetöltések a jobb LCP és teljesítmény érdekében[cite: 1] -->
 <link rel="preload" href="bg.jpg" as="image">
 <link rel="preload" href="pfp.png" as="image">
 <link rel="preload" href="Japan.jpg" as="image">
 <link rel="preload" href="Die to Live.jpg" as="image">
 <link rel="preload" href="Shoot Back.jpg" as="image">
 
-<!-- Social preview -->
-<meta property="og:title" content="srccxd">
-<meta property="og:description" content="Discord, Twitch, Telegram, Instagram és elérhetőség egy helyen.">
+<!-- Social preview[cite: 1] -->
+<meta property="og:title" content="srccxd[cite: 1]">
+<meta property="og:description" content="Discord, Twitch, Telegram, Instagram és elérhetőség egy helyen[cite: 1].">
 <meta property="og:image" content="pfp.png">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="srccxd">
+<meta name="twitter:title" content="srccxd[cite: 1]">
 <meta name="twitter:image" content="pfp.png">
 <meta name="theme-color" content="#050814">
 <link rel="icon" href="pfp.png">
@@ -69,11 +69,7 @@
         border: 1px solid var(--panel-border);
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
         z-index: 110;
-        cursor: pointer;
-        transition: opacity 0.3s ease, border-color 0.2s ease;
-    }
-    .top-right-profile:hover {
-        border-color: rgba(30, 215, 96, 0.4);
+        transition: opacity 0.3s ease;
     }
     .top-right-profile img {
         width: 36px;
@@ -105,53 +101,6 @@
     }
     .hidden {
         display: none !important;
-    }
-
-    /* ================= STATISZTIKA LENYÍLÓ PANEL ================= */
-    .profile-stats-dropdown {
-        position: fixed;
-        top: 75px;
-        right: 20px;
-        background: rgba(18, 18, 18, 0.95);
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
-        border: 1px solid var(--panel-border);
-        border-radius: 14px;
-        padding: 16px;
-        width: 270px;
-        box-shadow: 0 15px 40px rgba(0,0,0,0.6);
-        z-index: 120;
-        font-size: 0.85rem;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        transition: opacity 0.2s ease, transform 0.2s ease;
-    }
-    .profile-stats-dropdown.hidden {
-        display: none;
-    }
-    .stats-header {
-        font-family: 'Space Grotesk', sans-serif;
-        font-weight: 700;
-        font-size: 0.95rem;
-        color: var(--accent);
-        border-bottom: 1px solid rgba(255,255,255,0.1);
-        padding-bottom: 6px;
-        margin-bottom: 2px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-    .stats-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        color: var(--text-dim);
-    }
-    .stats-row span:last-child {
-        color: var(--text-main);
-        font-weight: 500;
-        text-align: right;
     }
 
     /* ================= KEZDETI BETÖLTŐ ANIMÁCIÓ (PRELOADER) ================= */
@@ -848,21 +797,11 @@
 </head>
 <body class="no-js">
 
-<!-- ================= TOP RIGHT DISCORD PROFILE WIDGET & STATS PANEL ================= -->
-<div id="top-profile" class="top-right-profile hidden" onclick="toggleProfileStats()">
+<!-- ================= TOP RIGHT DISCORD PROFILE WIDGET ================= -->
+<div id="top-profile" class="top-right-profile hidden">
     <img id="top-user-avatar" src="" alt="Avatar">
     <span id="top-username-display"></span>
-    <button class="logout-btn" onclick="event.stopPropagation(); logout()">Kilépés</button>
-</div>
-
-<div id="profileStatsPanel" class="profile-stats-dropdown hidden">
-    <div class="stats-header">
-        <span>Discord Statisztikák</span>
-        <span style="font-size: 0.7rem; color: var(--accent); font-weight: 500;">✓ csatlakozva</span>
-    </div>
-    <div class="stats-row"><span>Regisztráció:</span> <span id="statRegDate">-</span></div>
-    <div class="stats-row"><span>Szerver tag:</span> <span id="statGuildStatus">-</span></div>
-    <div class="stats-row"><span>Szerver rang:</span> <span id="statRole">-</span></div>
+    <button class="logout-btn" onclick="logout()">Kilépés</button>
 </div>
 
 <!-- ================= KEZDETI BETÖLTŐ ANIMÁCIÓ ================= -->
@@ -928,36 +867,36 @@
     </div>
 </div>
 
-<!-- ================= TÖBBLÉPÉSES KAPU ================= -->
+<!-- ================= TÖBBLÉPÉSES KAPU (1. Discord Login -> 2. 18+ Verification) ================= -->
 <div class="gate-overlay" id="gateOverlay" role="dialog" aria-modal="true" aria-labelledby="gateTitle">
     <!-- 1. LÉPÉS: Discord Bejelentkezési Kapu -->
     <div class="gate-card" id="stepDiscord">
         <div class="gate-badge" aria-hidden="true">
             <img src="discord-logo.png" alt="" width="28" height="28" style="object-fit: contain;">
         </div>
-        <h2 id="gateTitle">Discord Bejelentkezés</h2>
-        <p style="font-size: 0.88rem; color: var(--text-dim); margin-bottom: 20px;">A folytatáshoz először jelentkezz be a Discord fiókoddal.</p>
+        <h2 id="gateTitle">Discord Bejelentkezés[cite: 1]</h2>
+        <p style="font-size: 0.88rem; color: var(--text-dim); margin-bottom: 20px;">A folytatáshoz először jelentkezz be a Discord fiókoddal[cite: 1].</p>
         <button class="gate-btn gate-btn-discord" onclick="loginWithDiscord()">
-            <img src="discord-logo.png" alt="" width="20" height="20"> Login with Discord
+            <img src="discord-logo.png" alt="" width="20" height="20"> Login with Discord[cite: 1]
         </button>
         <button class="gate-btn gate-btn-leave" id="btnLeaveDiscord">Mégsem</button>
     </div>
 
     <!-- 2. LÉPÉS: 18+ Verifikációs Kapu -->
     <div class="gate-card hidden" id="stepAge">
-        <div class="gate-badge" aria-hidden="true">18+</div>
-        <h2>Access Verification</h2>
+        <div class="gate-badge" aria-hidden="true">18+[cite: 1]</div>
+        <h2>Access Verification[cite: 1]</h2>
         <label class="gate-check">
             <input type="checkbox" id="chkAge">
-            I confirm I am 18 or older.
+            I confirm I am 18 or older[cite: 1].
         </label>
-        <button class="gate-btn gate-btn-confirm" id="btnConfirm" disabled>Confirm, Enter</button>
-        <button class="gate-btn gate-btn-leave" id="btnLeaveAge">No, take me away!</button>
+        <button class="gate-btn gate-btn-confirm" id="btnConfirm" disabled>Confirm, Enter[cite: 1]</button>
+        <button class="gate-btn gate-btn-leave" id="btnLeaveAge">No, take me away![cite: 1]</button>
     </div>
 </div>
 
 <main id="top">
-    <!-- ================= PROFIL KÁRTYA ================= -->
+    <!-- ================= PROFIL KÁRTYA (MINDEN LINKkel) ================= -->
     <div class="browser-window" id="mainCard">
         <div class="browser-header">
             <div class="dots" aria-hidden="true">
@@ -974,31 +913,31 @@
 
             <div class="wordmark">SRCCXD</div>
 
-            <nav aria-label="Közösségi linkek">
+            <nav aria-label="Közösségi linkek[cite: 1]">
                 <ul class="links-list">
                     <li>
                         <a href="https://discord.gg/kNU6CpUC5Q" target="_blank" rel="noopener noreferrer" class="link-btn btn-discord">
-                            <img src="discord-logo.png" alt="" class="link-icon" width="40" height="40" loading="lazy"> Discord Szerver
+                            <img src="discord-logo.png" alt="" class="link-icon" width="40" height="40" loading="lazy"> Discord Szerver[cite: 1]
                         </a>
                     </li>
                     <li>
                         <a href="https://www.twitch.tv/srccxd" target="_blank" rel="noopener noreferrer" class="link-btn btn-twitch">
-                            <img src="twitch-logo.png" alt="" class="link-icon" width="40" height="40" loading="lazy"> Twitch
+                            <img src="twitch-logo.png" alt="" class="link-icon" width="40" height="40" loading="lazy"> Twitch[cite: 1]
                         </a>
                     </li>
                     <li>
                         <a href="https://t.me/srccxd" target="_blank" rel="noopener noreferrer" class="link-btn btn-telegram">
-                            <img src="telegram-logo.png" alt="" class="link-icon" width="40" height="40" loading="lazy"> Telegram
+                            <img src="telegram-logo.png" alt="" class="link-icon" width="40" height="40" loading="lazy"> Telegram[cite: 1]
                         </a>
                     </li>
                     <li>
                         <a href="https://www.instagram.com/v.tamas._" target="_blank" rel="noopener noreferrer" class="link-btn btn-instagram">
-                            <img src="ig.webp" alt="" class="link-icon" width="40" height="40" loading="lazy"> Instagram
+                            <img src="ig.webp" alt="" class="link-icon" width="40" height="40" loading="lazy"> Instagram[cite: 1]
                         </a>
                     </li>
                     <li>
                         <a href="mailto:sourceid18@gmail.com" class="link-btn btn-email">
-                            <img src="gmail-logo.png" alt="" class="link-icon" width="40" height="40" loading="lazy"> Business email
+                            <img src="gmail-logo.png" alt="" class="link-icon" width="40" height="40" loading="lazy"> Business email[cite: 1]
                         </a>
                     </li>
                 </ul>
@@ -1009,26 +948,26 @@
     <!-- ================= KASZINO SZEKCIÓ ================= -->
     <div class="casino-section" id="casinoSection">
         <div class="section-header-title">
-            🎰 Featured Casino
-            <span class="ad-tag">Hirdetés</span>
+            🎰 Featured Casino[cite: 1]
+            <span class="ad-tag">Hirdetés[cite: 1]</span>
         </div>
 
         <div class="casino-grid">
             <div class="casino-card">
                 <img src="spinline-logo.png" alt="SpinLine" class="casino-logo" loading="lazy">
                 <ul class="casino-perks">
-                    <li class="casino-perk-item">Üdvözlő csomag</li>
-                    <li class="casino-perk-item">Akár 720 000 Ft</li>
-                    <li class="casino-perk-item">+ 800 Ingyenes Pörgetés</li>
+                    <li class="casino-perk-item">Üdvözlő csomag[cite: 1]</li>
+                    <li class="casino-perk-item">Akár 720 000 Ft[cite: 1]</li>
+                    <li class="casino-perk-item">+ 800 Ingyenes Pörgetés[cite: 1]</li>
                 </ul>
-                <a href="https://spln.pleotra.com/?mid=382466_2215736" target="_blank" rel="noopener noreferrer" class="casino-btn">Játék most</a>
+                <a href="https://spln.pleotra.com/?mid=382466_2215736" target="_blank" rel="noopener noreferrer" class="casino-btn">Játék most[cite: 1]</a>
             </div>
         </div>
     </div>
 </main>
 
 <footer>
-    &copy; <span id="year"></span> casi
+    &copy; <span id="year"></span> casi[cite: 1]
 </footer>
 
 <script>
@@ -1038,38 +977,17 @@
     // ================= DISCORD OAUTH2 KONFIGURÁCIÓ =================
     const DISCORD_CLIENT_ID = '1529885857811660933';
     const REDIRECT_URI = 'https://morehyside.github.io/SRCCXD/';
-    
-    // Írd be ide a Discord szervered pontos számkódos ID-ját (Guild ID)
-    const GUILD_ID = '1529406935517106276'; 
-
-    const roleMapping = {
-        "1529407455442899044": ".!",
-        "1529450339034595328": "Server manager",
-        "1529532500643152067": "Helper",
-        "1529407704140087326": "tag"
-    };
-
-    const rolePriority = [
-        "1529407455442899044",
-        "1529450339034595328",
-        "1529532500643152067",
-        "1529407704140087326"
-    ];
 
     function clearAuthStorage() {
         localStorage.removeItem('discord_token');
         localStorage.removeItem('discord_username');
         localStorage.removeItem('discord_avatar');
-        localStorage.removeItem('discord_regdate');
-        localStorage.removeItem('discord_role');
-        localStorage.removeItem('discord_member');
     }
 
     function loginWithDiscord() {
         try {
             clearAuthStorage();
-            // Hozzáadva a guilds.members.read scope a szerverszintű rangok olvasásához
-            const authUrl = `https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=token&scope=identify+guilds+guilds.members.read`;
+            const authUrl = `https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=token&scope=identify`;
             window.location.href = authUrl;
         } catch (err) {
             console.error('Bejelentkezési hiba:', err);
@@ -1081,75 +999,25 @@
         window.location.href = REDIRECT_URI;
     }
 
-    // Lenyíló statisztika panel toggle
-    function toggleProfileStats() {
-        const panel = document.getElementById('profileStatsPanel');
-        panel.classList.toggle('hidden');
-    }
-
-    // Kattintásra záródjon a panel, ha mellékattintanak
-    window.addEventListener('click', function(e) {
-        const topProfile = document.getElementById('top-profile');
-        const panel = document.getElementById('profileStatsPanel');
-        if (topProfile && panel && !topProfile.contains(e.target) && !panel.contains(e.target)) {
-            panel.classList.add('hidden');
-        }
-    });
-
-    async function fetchUserData(token) {
-        return Promise.all([
-            fetch('https://discord.com/api/users/@me', {
-                headers: { 'Authorization': `Bearer ${token}` }
-            }).then(res => {
-                if (!res.ok) throw new Error('User API hiba');
-                return res.json();
-            }),
-            fetch('https://discord.com/api/users/@me/guilds', {
-                headers: { 'Authorization': `Bearer ${token}` }
-            }).then(res => {
-                if (!res.ok) return [];
-                return res.json();
-            }).catch(() => []),
-            fetch(`https://discord.com/api/users/@me/guilds/${GUILD_ID}/member`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            }).then(res => {
-                if (!res.ok) return null;
-                return res.json();
-            }).catch(() => null)
-        ])
-        .then(([user, guilds, memberData]) => {
+    function fetchUserData(token) {
+        return fetch('https://discord.com/api/users/@me', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
+        .then(res => {
+            if (!res.ok) throw new Error('Discord API hiba, státusz: ' + res.status);
+            return res.json();
+        })
+        .then(user => {
             const username = user.global_name || user.username;
             let avatarUrl = user.avatar 
                 ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`
                 : `https://cdn.discordapp.com/embed/avatars/${Number(user.id >> 22n) % 6}.png`;
 
-            // Regisztrációs dátum kiszámolása Snowflake ID-ból
-            const discordEpoch = 1420070400000n;
-            const useridBigInt = BigInt(user.id);
-            const timestamp = Number((useridBigInt >> 22n) + discordEpoch);
-            const regDate = new Date(timestamp).toLocaleDateString('hu-HU', { year: 'numeric', month: 'short', day: 'numeric' });
-
-            // Szervertagság ellenőrzése
-            const isMember = Array.isArray(guilds) && guilds.some(g => g.id === GUILD_ID);
-
-            // Rang meghatározása
-            let assignedRoleName = "Nincs rang";
-            if (memberData && memberData.roles) {
-                for (const roleId of rolePriority) {
-                    if (memberData.roles.includes(roleId)) {
-                        assignedRoleName = roleMapping[roleId];
-                        break;
-                    }
-                }
-            }
-
             localStorage.setItem('discord_username', username);
             localStorage.setItem('discord_avatar', avatarUrl);
-            localStorage.setItem('discord_regdate', regDate);
-            localStorage.setItem('discord_role', assignedRoleName);
-            localStorage.setItem('discord_member', isMember ? 'Igen ✅' : 'Nem ❌');
-
-            showLoggedInUI(username, avatarUrl, regDate, assignedRoleName, isMember ? 'Igen ✅' : 'Nem ❌');
+            showLoggedInUI(username, avatarUrl);
             return true;
         })
         .catch(err => {
@@ -1159,18 +1027,12 @@
         });
     }
 
-    function showLoggedInUI(username, avatarUrl, regDate, roleName, memberStatus) {
+    function showLoggedInUI(username, avatarUrl) {
         const topProfile = document.getElementById('top-profile');
         document.getElementById('top-username-display').innerText = username;
         if (avatarUrl) {
             document.getElementById('top-user-avatar').src = avatarUrl;
         }
-
-        // Stat adatok kitöltése
-        document.getElementById('statRegDate').textContent = regDate || '-';
-        document.getElementById('statGuildStatus').textContent = memberStatus || 'Igen ✅';
-        document.getElementById('statRole').textContent = roleName || 'Nincs rang';
-
         topProfile.classList.remove('hidden');
     }
 
@@ -1203,12 +1065,8 @@
                 const token = localStorage.getItem('discord_token');
                 const savedUsername = localStorage.getItem('discord_username');
                 const savedAvatar = localStorage.getItem('discord_avatar');
-                const savedRegDate = localStorage.getItem('discord_regdate');
-                const savedRole = localStorage.getItem('discord_role');
-                const savedMember = localStorage.getItem('discord_member');
-                
                 if (token && savedUsername) {
-                    showLoggedInUI(savedUsername, savedAvatar, savedRegDate, savedRole, savedMember);
+                    showLoggedInUI(savedUsername, savedAvatar);
                     isAuthed = true;
                 }
             }
@@ -1242,23 +1100,23 @@
             startVideo();
         }
 
-        // ================= LEJÁTSZÁSI LISTA =================
+        // ================= LEJÁTSZÁSI LISTA EGYEDI BORÍTÓKKAL =================
         var playlist = [
             {
-                title: "Japan",
-                artist: "Juice WRLD",
+                title: "Japan[cite: 1]",
+                artist: "Juice WRLD[cite: 1]",
                 src: "audio.mp3",
                 cover: "Japan.jpg"
             },
             {
-                title: "Die to Live",
-                artist: "Juice WRLD",
+                title: "Die to Live[cite: 1]",
+                artist: "Juice WRLD[cite: 1]",
                 src: "audio2.mp3",
                 cover: "Die to Live.jpg"
             },
             {
-                title: "Shoot Back",
-                artist: "Juice WRLD",
+                title: "Shoot Back[cite: 1]",
+                artist: "Juice WRLD[cite: 1]",
                 src: "audio3.mp3",
                 cover: "Shoot Back.jpg"
             }
