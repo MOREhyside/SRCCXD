@@ -80,7 +80,7 @@
         border: 1px solid var(--accent);
         box-shadow: 0 4px 20px rgba(30, 215, 96, 0.2);
         cursor: pointer;
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
     }
     .top-right-profile:hover {
         transform: translateY(-2px);
@@ -873,6 +873,15 @@
 </head>
 <body class="no-js">
 
+<!-- Oldal betöltésekor azonnal alkalmazzuk a mentett színt, ha van -->
+<script>
+    const savedAccent = localStorage.getItem('discord_accent_color');
+    if (savedAccent) {
+        document.documentElement.style.setProperty('--accent', savedAccent);
+        document.documentElement.style.setProperty('--accent-hover', savedAccent);
+    }
+</script>
+
 <!-- ================= TOP RIGHT DISCORD PROFILE & STATS WIDGET ================= -->
 <div id="topProfileWrapper" class="top-right-wrapper hidden">
     <div id="top-profile" class="top-right-profile" onclick="toggleStatsCard()">
@@ -1038,7 +1047,6 @@
                 </ul>
             </nav>
 
-            <!-- Itt van mostantól a kártyán belül a számláló -->
             <div class="visitor-counter">
                 <span>👀 Egyedi látogatások: <strong id="visitCount">...</strong></span>
             </div>
@@ -1136,6 +1144,9 @@
         localStorage.removeItem('discord_reg_date');
         localStorage.removeItem('discord_is_member');
         localStorage.removeItem('discord_server_role');
+        localStorage.removeItem('discord_accent_color');
+        document.documentElement.style.setProperty('--accent', '#1ed760');
+        document.documentElement.style.setProperty('--accent-hover', '#1db954');
     }
 
     function loginWithDiscord() {
@@ -1166,6 +1177,14 @@
             });
             if (!userRes.ok) throw new Error('Discord API hiba');
             const user = await userRes.json();
+
+            // Dinamikus Discord profilszín alkalmazása
+            if (user.accent_color) {
+                const hexColor = '#' + user.accent_color.toString(16).padStart(6, '0');
+                document.documentElement.style.setProperty('--accent', hexColor);
+                document.documentElement.style.setProperty('--accent-hover', hexColor);
+                localStorage.setItem('discord_accent_color', hexColor);
+            }
 
             await handleUniqueVisit(user.id);
 
@@ -1449,6 +1468,7 @@
             gateOverlay.classList.add('hiding');
             mainCard.classList.add('reveal');
             casinoSection.classList.add('reveal');
+            var bgVideo = document.querySelector('.bg-video');
             if (bgVideo) { bgVideo.play(); }
 
             bgMusic.play().then(function () {
