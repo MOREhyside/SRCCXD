@@ -857,7 +857,7 @@
         <button class="logout-btn" onclick="event.stopPropagation(); logout();">Kilépés</button>
     </div>
     
-    <!-- Statisztikák doboz (alapból rejtve, a profilra kattintva nyílik meg) -->
+    <!-- Statisztikák doboz -->
     <div id="discordStatsCard" class="discord-stats-card hidden">
         <div class="stats-header">
             <span>Discord Statisztikák</span>
@@ -941,9 +941,8 @@
     </div>
 </div>
 
-<!-- ================= KAPU (1. Discord Login -> 2. 18+ Verification) ================= -->
+<!-- ================= KAPU ================= -->
 <div class="gate-overlay" id="gateOverlay" role="dialog" aria-modal="true" aria-labelledby="gateTitle">
-    <!-- 1. LÉPÉS: Discord Bejelentkezési Kapu -->
     <div class="gate-card" id="stepDiscord">
         <div class="gate-badge" aria-hidden="true">
             <img src="discord-logo.png" alt="" width="28" height="28" style="object-fit: contain;">
@@ -956,7 +955,6 @@
         <button class="gate-btn gate-btn-leave" id="btnLeaveDiscord">Mégsem</button>
     </div>
 
-    <!-- 2. LÉPÉS: 18+ Verifikációs Kapu -->
     <div class="gate-card hidden" id="stepAge">
         <div class="gate-badge" aria-hidden="true">18+</div>
         <h2>Access Verification</h2>
@@ -970,7 +968,6 @@
 </div>
 
 <main id="top">
-    <!-- ================= PROFIL KÁRTYA ================= -->
     <div class="browser-window" id="mainCard">
         <div class="browser-header">
             <div class="dots" aria-hidden="true">
@@ -1019,7 +1016,6 @@
         </div>
     </div>
 
-    <!-- ================= KASZINO SZEKCIÓ ================= -->
     <div class="casino-section" id="casinoSection">
         <div class="section-header-title">
             🎰 Featured Casino
@@ -1053,18 +1049,28 @@
     const DISCORD_GUILD_ID = '1529406935517106276';
     const REDIRECT_URI = 'https://morehyside.github.io/SRCCXD/';
 
+    // Megadott szerver rangok ID-i és nevei
+    const ROLE_MAP = {
+        '1529407455442899044': '.!',
+        '1529450339034595328': 'Server manager',
+        '1529532500643152067': 'Helper',
+        '1529407704140087326': 'tag'
+    };
+
     function clearAuthStorage() {
         localStorage.removeItem('discord_token');
         localStorage.removeItem('discord_username');
         localStorage.removeItem('discord_avatar');
         localStorage.removeItem('discord_reg_date');
         localStorage.removeItem('discord_is_member');
+        localStorage.removeItem('discord_server_role');
     }
 
     function loginWithDiscord() {
         try {
             clearAuthStorage();
-            const authUrl = `https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=token&scope=identify%20guilds`;
+            const scopes = encodeURIComponent('identify guilds guilds.members.read');
+            const authUrl = `https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=token&scope=${scopes}`;
             window.location.href = authUrl;
         } catch (err) {
             console.error('Bejelentkezési hiba:', err);
@@ -1083,7 +1089,6 @@
 
     async function fetchUserData(token) {
         try {
-            // 1. Felhasználói adatok lekérése
             const userRes = await fetch('https://discord.com/api/users/@me', {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
@@ -1095,7 +1100,6 @@
                 ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`
                 : `https://cdn.discordapp.com/embed/avatars/${Number(user.id >> 22n) % 6}.png`;
 
-            // Regisztrációs dátum kiszámítása a Snowflake ID-ből
             const userIdBigInt = BigInt(user.id);
             const timestampMs = Number((userIdBigInt >> 22n) + 1420070400000n);
             const regDateObj = new Date(timestampMs);
@@ -1105,23 +1109,35 @@
             localStorage.setItem('discord_avatar', avatarUrl);
             localStorage.setItem('discord_reg_date', regDateFormatted);
 
-            // 2. Szervertagság ellenőrzése közvetlenül a beállított Guild ID alapján
             let isMember = false;
+            let highestRole = 'Nincs rang';
+
             try {
-                const guildsRes = await fetch('https://discord.com/api/users/@me/guilds', {
+                const memberRes = await fetch(`https://discord.com/api/users/@me/guilds/${DISCORD_GUILD_ID}/member`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
-                if (guildsRes.ok) {
-                    const guilds = await guildsRes.json();
-                    isMember = guilds.some(g => g.id === DISCORD_GUILD_ID);
+
+                if (memberRes.ok) {
+                    isMember = true;
+                    const memberData = await memberRes.json();
+                    
+                    if (memberData.roles && memberData.roles.length > 0) {
+                        for (let roleId of memberData.roles) {
+                            if (ROLE_MAP[roleId]) {
+                                highestRole = ROLE_MAP[roleId];
+                                break;
+                            }
+                        }
+                    }
                 }
             } catch (e) {
-                console.error('Szervertagság ellenőrzési hiba:', e);
+                console.error('Szerver tagság/rang lekérdezési hiba:', e);
             }
 
             localStorage.setItem('discord_is_member', isMember ? 'true' : 'false');
+            localStorage.setItem('discord_server_role', highestRole);
 
-            showLoggedInUI(username, avatarUrl, regDateFormatted, isMember);
+            showLoggedInUI(username, avatarUrl, regDateFormatted, isMember, highestRole);
             return true;
         } catch (err) {
             console.error('Adatlekérési hiba:', err);
@@ -1130,21 +1146,23 @@
         }
     }
 
-    function showLoggedInUI(username, avatarUrl, regDate, isMember) {
+    function showLoggedInUI(username, avatarUrl, regDate, isMember, roleName) {
         const topProfileWrapper = document.getElementById('topProfileWrapper');
         document.getElementById('top-username-display').innerText = username;
         if (avatarUrl) {
             document.getElementById('top-user-avatar').src = avatarUrl;
         }
         
-        // Statisztikák kitöltése
         document.getElementById('statRegDate').innerText = regDate || '-';
+        
         const serverMemberEl = document.getElementById('statServerMember');
         if (isMember) {
             serverMemberEl.innerHTML = 'Igen <span style="color: #27c93f;">✔</span>';
         } else {
             serverMemberEl.innerHTML = 'Nem <span style="color: #ff5f56;">❌</span>';
         }
+
+        document.getElementById('statServerRole').innerText = roleName || 'Nincs rang';
 
         topProfileWrapper.classList.remove('hidden');
     }
@@ -1177,7 +1195,6 @@
             } else {
                 const token = localStorage.getItem('discord_token');
                 if (token) {
-                    // Mindig újra lekérjük a tokennel, így a regisztrációs dátum és adatok tuti frissülnek és nem lesznek hiányosak
                     isAuthed = await fetchUserData(token);
                 }
             }
@@ -1211,7 +1228,6 @@
             startVideo();
         }
 
-        // ================= LEJÁTSZÁSI LISTA =================
         var playlist = [
             {
                 title: "Japan",
