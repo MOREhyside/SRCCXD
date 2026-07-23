@@ -49,16 +49,8 @@
         inset: 0;
         z-index: -2;
         overflow: hidden;
-        background: #050814 url('bg-poster.jpg') no-repeat center center;
+        background: #050814 url('bg.jpg') no-repeat center center;
         background-size: cover;
-    }
-
-    .bg::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: rgba(4, 6, 14, 0.45);
-        z-index: 1;
     }
 
     .bg-video {
@@ -67,11 +59,19 @@
         width: 100%;
         height: 100%;
         object-fit: cover;
+        z-index: 1;
+    }
+
+    .bg::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: rgba(4, 6, 14, 0.45);
+        z-index: 2;
     }
 
     @media (prefers-reduced-motion: reduce) {
         *, *::before, *::after { transition: none !important; animation: none !important; }
-        /* mozgásérzékeny látogatóknak állókép a videó helyett */
         .bg-video { display: none; }
     }
 
@@ -331,7 +331,6 @@
         box-shadow: 0 6px 20px rgba(0, 229, 188, 0.4);
     }
 
-    /* Nagyobb kijelzőn a kaszinó szekció rácsossá válhat, ha több kártya kerül bele */
     @media (min-width: 700px) {
         .casino-section { max-width: 900px; }
         .casino-grid { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
@@ -354,8 +353,6 @@
     }
 
     .gate-overlay.hidden { opacity: 0; pointer-events: none; }
-
-    /* JS nélkül a kapu nem lenne bezárható, ezért ilyenkor inkább nem jelenik meg */
     .no-js .gate-overlay { display: none; }
 
     .gate-card {
@@ -433,33 +430,12 @@
         font-size: 0.72rem;
         color: rgba(144, 160, 200, 0.5);
     }
-
-    .wallpaper-credit {
-        margin-top: 10px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 4px;
-    }
-
-    .wallpaper-credit a { display: inline-block; }
-
-    .wallpaper-credit img {
-        width: 130px;
-        height: auto;
-        border-radius: 6px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        opacity: 0.85;
-        transition: opacity 0.2s ease;
-    }
-
-    .wallpaper-credit img:hover { opacity: 1; }
 </style>
 </head>
 <body class="no-js">
 
 <div class="bg">
-    <video class="bg-video" autoplay muted loop playsinline poster="bg-poster.jpg" aria-hidden="true">
+    <video class="bg-video" autoplay muted loop playsinline poster="bg.jpg" aria-hidden="true">
         <source src="bg-video.mp4" type="video/mp4">
     </video>
 </div>
@@ -554,11 +530,6 @@
 
 <footer>
     &copy; <span id="year"></span> casi
-    <div class="wallpaper-credit">
-        <a href="https://moewalls.com/anime/partners-goodbye-pokemon-z-live-wallpaper/" target="_blank" rel="noopener noreferrer">
-            <img src="https://moewalls.com/wp-content/uploads/2023/04/partners-goodbye-pokemon-thumb-728x305.jpg" title="Partners Goodbye Pokemon Live Wallpaper" alt="Partners Goodbye Pokemon Live Wallpaper">
-        </a>
-    </div>
 </footer>
 
 <script>
@@ -566,8 +537,6 @@
     document.getElementById('year').textContent = new Date().getFullYear();
 
     document.addEventListener('DOMContentLoaded', function () {
-        // Háttérvideó indítása — ha a böngésző (pl. Brave Shields, szigorú
-        // autoplay-szabályok) blokkolja, az első kattintásra/érintésre elindul.
         var bgVideo = document.querySelector('.bg-video');
         if (bgVideo) {
             var startVideo = function () {
