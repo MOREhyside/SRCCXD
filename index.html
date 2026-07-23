@@ -4,11 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>casi — srccxd</title>
-<meta name="description" content="casi (srccxd) hivatalos linkjei — Discord, Twitch, Telegram és elérhetőség egy helyen.">
+<meta name="description" content="casi (srccxd) hivatalos linkjei — Discord, Twitch, Telegram és elérhetőség egy helyen.[cite: 1]">
 
-<!-- Social preview (Discord / Telegram / Twitter beágyazáshoz) -->
+<!-- Előbetöltések a jobb LCP és teljesítmény érdekében -->
+<link rel="preload" href="bg.jpg" as="image">
+<link rel="preload" href="pfp.png" as="image">
+
+<!-- Social preview -->
 <meta property="og:title" content="casi — srccxd">
-<meta property="og:description" content="Discord, Twitch, Telegram és elérhetőség egy helyen.">
+<meta property="og:description" content="Discord, Twitch, Telegram és elérhetőség egy helyen.[cite: 1]">
 <meta property="og:image" content="pfp.png">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary">
@@ -27,9 +31,12 @@
         --accent: #00e5bc;
         --accent-hover: #00c49f;
         --panel: rgba(12, 17, 32, 0.75);
+        --panel-solid: #0c1020;
         --panel-border: rgba(120, 150, 220, 0.28);
         --text-main: #eef1fb;
         --text-dim: #90a0c8;
+        --btn-disabled-bg: #454e63;
+        --btn-disabled-text: #cfd4e2;
     }
 
     html, body { height: 100%; }
@@ -70,7 +77,7 @@
         z-index: 2;
     }
 
-    @media (prefers-reduced-motion: reduce) {
+    @media (max-width: 768px), (prefers-reduced-motion: reduce) {
         *, *::before, *::after { transition: none !important; animation: none !important; }
         .bg-video { display: none; }
     }
@@ -82,25 +89,8 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        padding: 4vh 20px 8vh;
+        padding: 8vh 20px 8vh;
         gap: 40px;
-    }
-
-    .hero-title {
-        font-family: 'Space Grotesk', sans-serif;
-        font-weight: 700;
-        font-size: clamp(2.8rem, 9vw, 5rem);
-        letter-spacing: 0.05em;
-        color: #fff;
-        text-shadow: 0 0 40px rgba(76,141,255,0.65), 0 0 90px rgba(145,70,255,0.35);
-        text-align: center;
-        opacity: 0;
-        transform: translateY(-10px);
-        animation: dropIn 0.7s ease forwards 0.1s;
-    }
-
-    @keyframes dropIn {
-        to { opacity: 1; transform: translateY(0); }
     }
 
     /* ================= KÁRTYA (PROFIL) ================= */
@@ -161,13 +151,6 @@
         font-size: 1.6rem;
         letter-spacing: 0.06em;
         color: var(--text-main);
-        margin-bottom: 4px;
-    }
-
-    .subtitle {
-        font-size: 0.8rem;
-        color: var(--text-dim);
-        letter-spacing: 0.04em;
         margin-bottom: 26px;
     }
 
@@ -358,8 +341,8 @@
     .gate-card {
         width: 100%;
         max-width: 360px;
-        background: #0c1020;
-        border: 1px solid rgba(120, 150, 220, 0.25);
+        background: var(--panel-solid);
+        border: 1px solid var(--panel-border);
         border-radius: 16px;
         padding: 32px 28px 26px;
         text-align: center;
@@ -408,13 +391,13 @@
         font-family: 'Inter', sans-serif;
         font-size: 0.92rem;
         font-weight: 600;
-        border: 1px solid rgba(120, 150, 220, 0.25);
+        border: 1px solid var(--panel-border);
         cursor: pointer;
         margin-top: 8px;
         transition: transform 0.15s ease, box-shadow 0.2s ease, opacity 0.2s ease;
     }
 
-    .gate-btn-confirm { background: #454e63; color: #cfd4e2; }
+    .gate-btn-confirm { background: var(--btn-disabled-bg); color: var(--btn-disabled-text); }
     .gate-btn-confirm:not(:disabled) { background: var(--accent); color: #050814; }
     .gate-btn-confirm:not(:disabled):hover { background: var(--accent-hover); box-shadow: 0 6px 18px rgba(0, 229, 188, 0.4); }
     .gate-btn-confirm:disabled { opacity: 0.5; cursor: not-allowed; }
@@ -449,10 +432,6 @@
             <input type="checkbox" id="chkAge">
             I confirm I am 18 or older.
         </label>
-        <label class="gate-check">
-            <input type="checkbox" id="chkRegion">
-            I am outside Hungary.
-        </label>
         <button class="gate-btn gate-btn-confirm" id="btnConfirm" disabled>Confirm, Enter</button>
         <button class="gate-btn gate-btn-leave" id="btnLeave">No, take me away!</button>
     </div>
@@ -471,11 +450,11 @@
 
         <div class="content">
             <div class="profile-container">
-                <img src="pfp.png" alt="Profilkép" class="profile-img" width="108" height="108">
+                <img src="pfp.png" alt="Profilkép" class="profile-img" width="108" height="108" loading="eager">
             </div>
 
-            <div class="wordmark">CASI</div>
-            <div class="subtitle">srccxd</div>
+            <!-- Módosítva: Profilkép alatti SRCCXD felirat nagyméretű Space Grotesk stílusban -->
+            <div class="wordmark">SRCCXD</div>
 
             <nav aria-label="Közösségi linkek">
                 <ul class="links-list">
@@ -537,25 +516,11 @@
     document.addEventListener('DOMContentLoaded', function () {
         var bgVideo = document.querySelector('.bg-video');
         if (bgVideo) {
-            bgVideo.addEventListener('error', function () {
-                var err = bgVideo.error;
-                console.error('Bg video error code:', err ? err.code : 'ismeretlen', '- ellenőrizd, hogy a bg-video.mp4 az index.html mellett van-e.');
-            });
-
             var startVideo = function () {
                 var playPromise = bgVideo.play();
                 if (playPromise !== undefined) {
-                    playPromise.then(function () {
-                        console.log('Bg video: lejátszás elindult.');
-                    }).catch(function (err) {
-                        console.warn('Bg video: autoplay blokkolva (' + err.name + '), várakozás felhasználói interakcióra...');
-                        var resume = function () {
-                            bgVideo.play().then(function () {
-                                console.log('Bg video: lejátszás elindult interakció után.');
-                            }).catch(function (e2) {
-                                console.error('Bg video: interakció után sem indult el:', e2);
-                            });
-                        };
+                    playPromise.catch(function () {
+                        var resume = function () { bgVideo.play(); };
                         document.addEventListener('click', resume, { once: true });
                         document.addEventListener('touchstart', resume, { once: true });
                         document.addEventListener('keydown', resume, { once: true });
@@ -566,7 +531,6 @@
         }
 
         var chkAge = document.getElementById('chkAge');
-        var chkRegion = document.getElementById('chkRegion');
         var btnConfirm = document.getElementById('btnConfirm');
         var btnLeave = document.getElementById('btnLeave');
         var gateOverlay = document.getElementById('gateOverlay');
@@ -574,11 +538,10 @@
         var casinoSection = document.getElementById('casinoSection');
 
         function updateConfirmState() {
-            btnConfirm.disabled = !(chkAge.checked && chkRegion.checked);
+            btnConfirm.disabled = !chkAge.checked;
         }
 
         chkAge.addEventListener('change', updateConfirmState);
-        chkRegion.addEventListener('change', updateConfirmState);
 
         function enterSite() {
             gateOverlay.classList.add('hidden');
@@ -595,6 +558,28 @@
         btnLeave.addEventListener('click', function () {
             window.location.href = 'https://www.google.com';
         });
+
+        var focusableElements = gateOverlay.querySelectorAll('input, button');
+        var firstElement = focusableElements[0];
+        var lastElement = focusableElements[focusableElements.length - 1];
+
+        gateOverlay.addEventListener('keydown', function (e) {
+            if (e.key === 'Tab') {
+                if (e.shiftKey) {
+                    if (document.activeElement === firstElement) {
+                        lastElement.focus();
+                        e.preventDefault();
+                    }
+                } else {
+                    if (document.activeElement === lastElement) {
+                        firstElement.focus();
+                        e.preventDefault();
+                    }
+                }
+            }
+        });
+        
+        if(firstElement) firstElement.focus();
     });
 </script>
 
