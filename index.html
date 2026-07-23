@@ -459,8 +459,6 @@
 </div>
 
 <main id="top">
-    <div class="hero-title">CASI</div>
-
     <!-- ================= PROFIL KÁRTYA ================= -->
     <div class="browser-window" id="mainCard">
         <div class="browser-header">
@@ -539,11 +537,25 @@
     document.addEventListener('DOMContentLoaded', function () {
         var bgVideo = document.querySelector('.bg-video');
         if (bgVideo) {
+            bgVideo.addEventListener('error', function () {
+                var err = bgVideo.error;
+                console.error('Bg video error code:', err ? err.code : 'ismeretlen', '- ellenőrizd, hogy a bg-video.mp4 az index.html mellett van-e.');
+            });
+
             var startVideo = function () {
                 var playPromise = bgVideo.play();
                 if (playPromise !== undefined) {
-                    playPromise.catch(function () {
-                        var resume = function () { bgVideo.play(); };
+                    playPromise.then(function () {
+                        console.log('Bg video: lejátszás elindult.');
+                    }).catch(function (err) {
+                        console.warn('Bg video: autoplay blokkolva (' + err.name + '), várakozás felhasználói interakcióra...');
+                        var resume = function () {
+                            bgVideo.play().then(function () {
+                                console.log('Bg video: lejátszás elindult interakció után.');
+                            }).catch(function (e2) {
+                                console.error('Bg video: interakció után sem indult el:', e2);
+                            });
+                        };
                         document.addEventListener('click', resume, { once: true });
                         document.addEventListener('touchstart', resume, { once: true });
                         document.addEventListener('keydown', resume, { once: true });
