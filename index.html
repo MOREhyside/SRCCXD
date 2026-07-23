@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hu">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>srccxd</title>
-<meta name="description" content="casi (srccxd) official links — Discord, Twitch, Telegram, Instagram and contact, all in one place.">
+<meta name="description" content="casi (srccxd) hivatalos linkjei — Discord, Twitch, Telegram, Instagram és elérhetőség egy helyen.">
 
-<!-- Preloads for better LCP and performance -->
+<!-- Előbetöltések a jobb LCP és teljesítmény érdekében -->
 <link rel="preload" href="bg.jpg" as="image">
 <link rel="preload" href="pfp.png" as="image">
 <link rel="preload" href="Japan.jpg" as="image">
@@ -15,7 +15,7 @@
 
 <!-- Social preview -->
 <meta property="og:title" content="srccxd">
-<meta property="og:description" content="Discord, Twitch, Telegram, Instagram and contact, all in one place.">
+<meta property="og:description" content="Discord, Twitch, Telegram, Instagram és elérhetőség egy helyen.">
 <meta property="og:image" content="pfp.png">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary">
@@ -69,7 +69,11 @@
         border: 1px solid var(--panel-border);
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
         z-index: 110;
-        transition: opacity 0.3s ease;
+        cursor: pointer;
+        transition: opacity 0.3s ease, border-color 0.2s ease;
+    }
+    .top-right-profile:hover {
+        border-color: rgba(30, 215, 96, 0.4);
     }
     .top-right-profile img {
         width: 36px;
@@ -103,7 +107,54 @@
         display: none !important;
     }
 
-    /* ================= INITIAL LOADER ANIMATION (PRELOADER) ================= */
+    /* ================= STATISZTIKA LENYÍLÓ PANEL ================= */
+    .profile-stats-dropdown {
+        position: fixed;
+        top: 75px;
+        right: 20px;
+        background: rgba(18, 18, 18, 0.95);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid var(--panel-border);
+        border-radius: 14px;
+        padding: 16px;
+        width: 270px;
+        box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+        z-index: 120;
+        font-size: 0.85rem;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+    .profile-stats-dropdown.hidden {
+        display: none;
+    }
+    .stats-header {
+        font-family: 'Space Grotesk', sans-serif;
+        font-weight: 700;
+        font-size: 0.95rem;
+        color: var(--accent);
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+        padding-bottom: 6px;
+        margin-bottom: 2px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .stats-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: var(--text-dim);
+    }
+    .stats-row span:last-child {
+        color: var(--text-main);
+        font-weight: 500;
+        text-align: right;
+    }
+
+    /* ================= KEZDETI BETÖLTŐ ANIMÁCIÓ (PRELOADER) ================= */
     .intro-loader {
         position: fixed;
         inset: 0;
@@ -134,7 +185,7 @@
         to { transform: rotate(360deg); }
     }
 
-    /* ================= BACKGROUND ================= */
+    /* ================= HÁTTÉR ================= */
     .bg {
         position: fixed;
         inset: 0;
@@ -166,7 +217,7 @@
         .bg-video { display: none; }
     }
 
-    /* ================= MAIN CONTENT ================= */
+    /* ================= FŐ TARTALOM ================= */
     main {
         position: relative;
         z-index: 5;
@@ -177,7 +228,7 @@
         gap: 40px;
     }
 
-    /* ================= CARD (PROFILE) ================= */
+    /* ================= KÁRTYA (PROFIL) ================= */
     .browser-window {
         width: 100%;
         max-width: 420px;
@@ -212,7 +263,7 @@
 
     .content { padding: 34px 30px 28px; text-align: center; }
 
-    /* ================= STAGGERED ANIMATION ELEMENTS ================= */
+    /* ================= LÉPCSŐZETES ANIMÁCIÓK ELEMEI ================= */
     .profile-container, .wordmark, .links-list li, .casino-section > * {
         opacity: 0;
         transform: translateY(15px);
@@ -345,7 +396,7 @@
     .btn-email:hover     { background: #EA4335; box-shadow: 0 8px 22px rgba(234, 67, 53, 0.45); }
     .btn-login:hover     { background: #5865F2; box-shadow: 0 8px 22px rgba(88, 101, 242, 0.45); }
 
-    /* ================= CASINO SECTION ================= */
+    /* ================= KASZINO SZEKCIÓ ================= */
     .casino-section {
         width: 100%;
         max-width: 420px;
@@ -458,7 +509,7 @@
         .casino-grid { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
     }
 
-    /* ================= SPOTIFY VERTICAL PLAYER (RIGHT SIDE) ================= */
+    /* ================= SPOTIFY FÜGGŐLEGES LEJÁTSZÓ (JOBB OLDALT) ================= */
     .spotify-player {
         position: fixed;
         bottom: 20px;
@@ -553,7 +604,7 @@
         transform: scale(1.1);
     }
 
-    /* Timeline / Progress */
+    /* Idősáv / Progress */
     .sp-progress-area {
         display: flex;
         flex-direction: column;
@@ -594,7 +645,7 @@
         color: var(--text-dim);
     }
 
-    /* Controls row */
+    /* Vezérlők sora */
     .sp-controls {
         display: flex;
         align-items: center;
@@ -637,7 +688,7 @@
         background: #fff;
     }
 
-    /* Volume bar at bottom */
+    /* Hangerő sáv alul */
     .sp-volume-row {
         display: flex;
         align-items: center;
@@ -655,7 +706,7 @@
         }
     }
 
-    /* ================= GATE (STEP 1: DISCORD LOGIN, STEP 2: 18+) ================= */
+    /* ================= KAPU (1. LÉPÉS: DISCORD LOGIN, 2. LÉPÉS: 18+) ================= */
     .gate-overlay {
         position: fixed;
         inset: 0;
@@ -797,14 +848,24 @@
 </head>
 <body class="no-js">
 
-<!-- ================= TOP RIGHT DISCORD PROFILE WIDGET ================= -->
-<div id="top-profile" class="top-right-profile hidden">
+<!-- ================= TOP RIGHT DISCORD PROFILE WIDGET & STATS PANEL ================= -->
+<div id="top-profile" class="top-right-profile hidden" onclick="toggleProfileStats()">
     <img id="top-user-avatar" src="" alt="Avatar">
     <span id="top-username-display"></span>
-    <button class="logout-btn" onclick="logout()">Logout</button>
+    <button class="logout-btn" onclick="event.stopPropagation(); logout()">Kilépés</button>
 </div>
 
-<!-- ================= INITIAL LOADER ANIMATION ================= -->
+<div id="profileStatsPanel" class="profile-stats-dropdown hidden">
+    <div class="stats-header">
+        <span>Discord Statisztikák</span>
+        <span style="font-size: 0.7rem; color: var(--accent); font-weight: 500;">✓ csatlakozva</span>
+    </div>
+    <div class="stats-row"><span>Regisztráció:</span> <span id="statRegDate">-</span></div>
+    <div class="stats-row"><span>Szerver tag:</span> <span id="statGuildStatus">-</span></div>
+    <div class="stats-row"><span>Jelvények:</span> <span id="statBadges">-</span></div>
+</div>
+
+<!-- ================= KEZDETI BETÖLTŐ ANIMÁCIÓ ================= -->
 <div class="intro-loader" id="introLoader">
     <div class="loader-spinner"></div>
 </div>
@@ -815,7 +876,7 @@
     </video>
 </div>
 
-<!-- ================= SPOTIFY VERTICAL PLAYER WIDGET ================= -->
+<!-- ================= SPOTIFY FÜGGŐLEGES LEJÁTSZÓ WIDGET ================= -->
 <audio id="bgMusic" preload="auto"></audio>
 
 <div class="spotify-player" id="spotifyPlayer">
@@ -830,13 +891,13 @@
             <div class="sp-title" id="spTitle">Japan</div>
             <div class="sp-artist" id="spArtist">Juice WRLD</div>
         </div>
-        <button class="sp-like-btn" aria-label="Add to favorites">
+        <button class="sp-like-btn" aria-label="Kedvencekbe mentés">
             <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
         </button>
     </div>
 
     <div class="sp-progress-area">
-        <input type="range" id="spProgress" min="0" max="100" value="0" class="sp-slider" aria-label="Progress bar">
+        <input type="range" id="spProgress" min="0" max="100" value="0" class="sp-slider" aria-label="Haladási sáv">
         <div class="sp-time-row">
             <span id="spCurrentTime">0:00</span>
             <span id="spDuration">0:00</span>
@@ -844,45 +905,45 @@
     </div>
 
     <div class="sp-controls">
-        <button class="sp-control-btn" id="spShuffleBtn" aria-label="Shuffle">
+        <button class="sp-control-btn" id="spShuffleBtn" aria-label="Keverés">
             <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z"/></svg>
         </button>
-        <button class="sp-control-btn" id="spPrevBtn" aria-label="Previous track">
+        <button class="sp-control-btn" id="spPrevBtn" aria-label="Előző szám">
             <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
         </button>
-        <button class="sp-play-btn-large" id="spPlayBtn" aria-label="Play / Pause">
+        <button class="sp-play-btn-large" id="spPlayBtn" aria-label="Lejátszás / Szünet">
             <svg id="spIcon" viewBox="0 0 24 24" width="20" height="20" fill="#121212"><path d="M8 5v14l11-7z"/></svg>
         </button>
-        <button class="sp-control-btn" id="spNextBtn" aria-label="Next track">
+        <button class="sp-control-btn" id="spNextBtn" aria-label="Következő szám">
             <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
         </button>
-        <button class="sp-control-btn" id="spRepeatBtn" aria-label="Repeat">
+        <button class="sp-control-btn" id="spRepeatBtn" aria-label="Ismétlés">
             <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg>
         </button>
     </div>
 
     <div class="sp-volume-row">
         <svg viewBox="0 0 24 24" width="16" height="16" fill="#b3b3b3"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
-        <input type="range" id="spVolume" min="0" max="1" step="0.01" value="0.15" class="sp-slider" aria-label="Volume">
+        <input type="range" id="spVolume" min="0" max="1" step="0.01" value="0.15" class="sp-slider" aria-label="Hangerő">
     </div>
 </div>
 
-<!-- ================= MULTI-STEP GATE (1. Discord Login -> 2. 18+ Verification) ================= -->
+<!-- ================= TÖBBLÉPÉSES KAPU ================= -->
 <div class="gate-overlay" id="gateOverlay" role="dialog" aria-modal="true" aria-labelledby="gateTitle">
-    <!-- STEP 1: Discord Login Gate -->
+    <!-- 1. LÉPÉS: Discord Bejelentkezési Kapu -->
     <div class="gate-card" id="stepDiscord">
         <div class="gate-badge" aria-hidden="true">
             <img src="discord-logo.png" alt="" width="28" height="28" style="object-fit: contain;">
         </div>
-        <h2 id="gateTitle">Discord Login</h2>
-        <p style="font-size: 0.88rem; color: var(--text-dim); margin-bottom: 20px;">To continue, please log in with your Discord account first.</p>
+        <h2 id="gateTitle">Discord Bejelentkezés</h2>
+        <p style="font-size: 0.88rem; color: var(--text-dim); margin-bottom: 20px;">A folytatáshoz először jelentkezz be a Discord fiókoddal.</p>
         <button class="gate-btn gate-btn-discord" onclick="loginWithDiscord()">
             <img src="discord-logo.png" alt="" width="20" height="20"> Login with Discord
         </button>
-        <button class="gate-btn gate-btn-leave" id="btnLeaveDiscord">Cancel</button>
+        <button class="gate-btn gate-btn-leave" id="btnLeaveDiscord">Mégsem</button>
     </div>
 
-    <!-- STEP 2: 18+ Verification Gate -->
+    <!-- 2. LÉPÉS: 18+ Verifikációs Kapu -->
     <div class="gate-card hidden" id="stepAge">
         <div class="gate-badge" aria-hidden="true">18+</div>
         <h2>Access Verification</h2>
@@ -896,7 +957,7 @@
 </div>
 
 <main id="top">
-    <!-- ================= PROFILE CARD (WITH ALL LINKS) ================= -->
+    <!-- ================= PROFIL KÁRTYA ================= -->
     <div class="browser-window" id="mainCard">
         <div class="browser-header">
             <div class="dots" aria-hidden="true">
@@ -908,16 +969,16 @@
 
         <div class="content">
             <div class="profile-container">
-                <img src="pfp.png" alt="Profile picture" class="profile-img" width="108" height="108" loading="eager">
+                <img src="pfp.png" alt="Profilkép" class="profile-img" width="108" height="108" loading="eager">
             </div>
 
             <div class="wordmark">SRCCXD</div>
 
-            <nav aria-label="Social links">
+            <nav aria-label="Közösségi linkek">
                 <ul class="links-list">
                     <li>
                         <a href="https://discord.gg/kNU6CpUC5Q" target="_blank" rel="noopener noreferrer" class="link-btn btn-discord">
-                            <img src="discord-logo.png" alt="" class="link-icon" width="40" height="40" loading="lazy"> Discord Server
+                            <img src="discord-logo.png" alt="" class="link-icon" width="40" height="40" loading="lazy"> Discord Szerver
                         </a>
                     </li>
                     <li>
@@ -945,22 +1006,22 @@
         </div>
     </div>
 
-    <!-- ================= CASINO SECTION ================= -->
+    <!-- ================= KASZINO SZEKCIÓ ================= -->
     <div class="casino-section" id="casinoSection">
         <div class="section-header-title">
             🎰 Featured Casino
-            <span class="ad-tag">Ad</span>
+            <span class="ad-tag">Hirdetés</span>
         </div>
 
         <div class="casino-grid">
             <div class="casino-card">
                 <img src="spinline-logo.png" alt="SpinLine" class="casino-logo" loading="lazy">
                 <ul class="casino-perks">
-                    <li class="casino-perk-item">Welcome package</li>
-                    <li class="casino-perk-item">Up to 720 000 Ft</li>
-                    <li class="casino-perk-item">+ 800 Free Spins</li>
+                    <li class="casino-perk-item">Üdvözlő csomag</li>
+                    <li class="casino-perk-item">Akár 720 000 Ft</li>
+                    <li class="casino-perk-item">+ 800 Ingyenes Pörgetés</li>
                 </ul>
-                <a href="https://spln.pleotra.com/?mid=382466_2215736" target="_blank" rel="noopener noreferrer" class="casino-btn">Play Now</a>
+                <a href="https://spln.pleotra.com/?mid=382466_2215736" target="_blank" rel="noopener noreferrer" class="casino-btn">Játék most</a>
             </div>
         </div>
     </div>
@@ -974,7 +1035,7 @@
     document.body.classList.remove('no-js');
     document.getElementById('year').textContent = new Date().getFullYear();
 
-    // ================= DISCORD OAUTH2 CONFIGURATION =================
+    // ================= DISCORD OAUTH2 KONFIGURÁCIÓ =================
     const DISCORD_CLIENT_ID = '1529885857811660933';
     const REDIRECT_URI = 'https://morehyside.github.io/SRCCXD/';
 
@@ -982,15 +1043,18 @@
         localStorage.removeItem('discord_token');
         localStorage.removeItem('discord_username');
         localStorage.removeItem('discord_avatar');
+        localStorage.removeItem('discord_regdate');
+        localStorage.removeItem('discord_badges');
     }
 
     function loginWithDiscord() {
         try {
             clearAuthStorage();
-            const authUrl = `https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=token&scope=identify`;
+            // Bővítve a 'guilds' scope-tal a szervertagság ellenőrzéshez
+            const authUrl = `https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=token&scope=identify+guilds`;
             window.location.href = authUrl;
         } catch (err) {
-            console.error('Login error:', err);
+            console.error('Bejelentkezési hiba:', err);
         }
     }
 
@@ -999,40 +1063,106 @@
         window.location.href = REDIRECT_URI;
     }
 
-    function fetchUserData(token) {
-        return fetch('https://discord.com/api/users/@me', {
-            headers: {
-                'Authorization': `Bearer ${token}`
+    // Lenyíló statisztika panel toggle
+    function toggleProfileStats() {
+        const panel = document.getElementById('profileStatsPanel');
+        panel.classList.toggle('hidden');
+    }
+
+    // Kattintásra záródjon a panel, ha mellékattintanak
+    window.addEventListener('click', function(e) {
+        const topProfile = document.getElementById('top-profile');
+        const panel = document.getElementById('profileStatsPanel');
+        if (topProfile && panel && !topProfile.contains(e.target) && !panel.contains(e.target)) {
+            panel.classList.add('hidden');
+        }
+    });
+
+    // Discord Flag bitmaszkok dekódolása
+    function parseDiscordFlags(flags) {
+        if (!flags) return 'Nincs';
+        const FLAG_MAP = {
+            1: 'Staff',
+            2: 'Partner',
+            4: 'HypeSquad Event',
+            8: 'Bug Hunter 1',
+            64: 'Bravery',
+            128: 'Brilliance',
+            256: 'Balance',
+            512: 'Early Supporter',
+            16384: 'Bug Hunter 2',
+            131072: 'Dev',
+            4194304: 'Active Dev'
+        };
+        let userBadges = [];
+        for (const [bit, name] of Object.entries(FLAG_MAP)) {
+            if ((flags & Number(bit)) === Number(bit)) {
+                userBadges.push(name);
             }
-        })
-        .then(res => {
-            if (!res.ok) throw new Error('Discord API error, status: ' + res.status);
-            return res.json();
-        })
-        .then(user => {
+        }
+        return userBadges.length > 0 ? userBadges.join(', ') : 'Nincs';
+    }
+
+    function fetchUserData(token) {
+        return Promise.all([
+            fetch('https://discord.com/api/users/@me', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            }).then(res => {
+                if (!res.ok) throw new Error('User API hiba');
+                return res.json();
+            }),
+            fetch('https://discord.com/api/users/@me/guilds', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            }).then(res => {
+                if (!res.ok) return [];
+                return res.json();
+            }).catch(() => [])
+        ])
+        .then(([user, guilds]) => {
             const username = user.global_name || user.username;
             let avatarUrl = user.avatar 
                 ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`
                 : `https://cdn.discordapp.com/embed/avatars/${Number(user.id >> 22n) % 6}.png`;
 
+            // Regisztrációs dátum kiszámolása Snowflake ID-ból
+            const discordEpoch = 1420070400000n;
+            const useridBigInt = BigInt(user.id);
+            const timestamp = Number((useridBigInt >> 22n) + discordEpoch);
+            const regDate = new Date(timestamp).toLocaleDateString('hu-HU', { year: 'numeric', month: 'short', day: 'numeric' });
+
+            const badges = parseDiscordFlags(user.public_flags);
+            
+            // Ellenőrzés, hogy van-e közös szerver (vagy ha a guilds lekérdezés sikeres)
+            const isMember = Array.isArray(guilds) && guilds.length > 0;
+
             localStorage.setItem('discord_username', username);
             localStorage.setItem('discord_avatar', avatarUrl);
-            showLoggedInUI(username, avatarUrl);
+            localStorage.setItem('discord_regdate', regDate);
+            localStorage.setItem('discord_badges', badges);
+            localStorage.setItem('discord_member', isMember ? 'Igen ✅' : 'Nem ❌');
+
+            showLoggedInUI(username, avatarUrl, regDate, badges, isMember ? 'Igen ✅' : 'Nem ❌');
             return true;
         })
         .catch(err => {
-            console.error('Data fetch error:', err);
+            console.error('Adatlekérési hiba:', err);
             clearAuthStorage();
             return false;
         });
     }
 
-    function showLoggedInUI(username, avatarUrl) {
+    function showLoggedInUI(username, avatarUrl, regDate, badges, memberStatus) {
         const topProfile = document.getElementById('top-profile');
         document.getElementById('top-username-display').innerText = username;
         if (avatarUrl) {
             document.getElementById('top-user-avatar').src = avatarUrl;
         }
+
+        // Stat adatok kitöltése
+        document.getElementById('statRegDate').textContent = regDate || '-';
+        document.getElementById('statGuildStatus').textContent = memberStatus || 'Igen ✅';
+        document.getElementById('statBadges').textContent = badges || 'Nincs';
+
         topProfile.classList.remove('hidden');
     }
 
@@ -1065,16 +1195,19 @@
                 const token = localStorage.getItem('discord_token');
                 const savedUsername = localStorage.getItem('discord_username');
                 const savedAvatar = localStorage.getItem('discord_avatar');
+                const savedRegDate = localStorage.getItem('discord_regdate');
+                const savedBadges = localStorage.getItem('discord_badges');
+                const savedMember = localStorage.getItem('discord_member');
+                
                 if (token && savedUsername) {
-                    showLoggedInUI(savedUsername, savedAvatar);
+                    showLoggedInUI(savedUsername, savedAvatar, savedRegDate, savedBadges, savedMember);
                     isAuthed = true;
                 }
             }
         } catch (err) {
-            console.error('Token processing error:', err);
+            console.error('Token feldolgozási hiba:', err);
         }
 
-        // If logged in, move to the 18+ gate, otherwise show the Discord login
         if (isAuthed) {
             stepDiscord.classList.add('hidden');
             stepAge.classList.remove('hidden');
@@ -1101,7 +1234,7 @@
             startVideo();
         }
 
-        // ================= PLAYLIST WITH CUSTOM COVERS =================
+        // ================= LEJÁTSZÁSI LISTA =================
         var playlist = [
             {
                 title: "Japan",
