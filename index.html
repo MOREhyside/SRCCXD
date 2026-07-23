@@ -862,7 +862,7 @@
     </div>
     <div class="stats-row"><span>Regisztráció:</span> <span id="statRegDate">-</span></div>
     <div class="stats-row"><span>Szerver tag:</span> <span id="statGuildStatus">-</span></div>
-    <div class="stats-row"><span>Jelvények:</span> <span id="statBadges">-</span></div>
+    <div class="stats-row"><span>Szerver rang:</span> <span id="statRole">-</span></div>
 </div>
 
 <!-- ================= KEZDETI BETÖLTŐ ANIMÁCIÓ ================= -->
@@ -1038,20 +1038,38 @@
     // ================= DISCORD OAUTH2 KONFIGURÁCIÓ =================
     const DISCORD_CLIENT_ID = '1529885857811660933';
     const REDIRECT_URI = 'https://morehyside.github.io/SRCCXD/';
+    
+    // Írd be ide a Discord szervered pontos számkódos ID-ját (Guild ID)
+    const GUILD_ID = 'ITT_ADD_MEG_A_SZERVER_ID_T'; 
+
+    const roleMapping = {
+        "1529407455442899044": ".!",
+        "1529450339034595328": "Server manager",
+        "1529532500643152067": "Helper",
+        "1529407704140087326": "tag"
+    };
+
+    const rolePriority = [
+        "1529407455442899044",
+        "1529450339034595328",
+        "1529532500643152067",
+        "1529407704140087326"
+    ];
 
     function clearAuthStorage() {
         localStorage.removeItem('discord_token');
         localStorage.removeItem('discord_username');
         localStorage.removeItem('discord_avatar');
         localStorage.removeItem('discord_regdate');
-        localStorage.removeItem('discord_badges');
+        localStorage.removeItem('discord_role');
+        localStorage.removeItem('discord_member');
     }
 
     function loginWithDiscord() {
         try {
             clearAuthStorage();
-            // Bővítve a 'guilds' scope-tal a szervertagság ellenőrzéshez
-            const authUrl = `https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=token&scope=identify+guilds`;
+            // Hozzáadva a guilds.members.read scope a szerverszintű rangok olvasásához
+            const authUrl = `https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=token&scope=identify+guilds+guilds.members.read`;
             window.location.href = authUrl;
         } catch (err) {
             console.error('Bejelentkezési hiba:', err);
@@ -1078,32 +1096,7 @@
         }
     });
 
-    // Discord Flag bitmaszkok dekódolása
-    function parseDiscordFlags(flags) {
-        if (!flags) return 'Nincs';
-        const FLAG_MAP = {
-            1: 'Staff',
-            2: 'Partner',
-            4: 'HypeSquad Event',
-            8: 'Bug Hunter 1',
-            64: 'Bravery',
-            128: 'Brilliance',
-            256: 'Balance',
-            512: 'Early Supporter',
-            16384: 'Bug Hunter 2',
-            131072: 'Dev',
-            4194304: 'Active Dev'
-        };
-        let userBadges = [];
-        for (const [bit, name] of Object.entries(FLAG_MAP)) {
-            if ((flags & Number(bit)) === Number(bit)) {
-                userBadges.push(name);
-            }
-        }
-        return userBadges.length > 0 ? userBadges.join(', ') : 'Nincs';
-    }
-
-    function fetchUserData(token) {
+    async function fetchUserData(token) {
         return Promise.all([
             fetch('https://discord.com/api/users/@me', {
                 headers: { 'Authorization': `Bearer ${token}` }
@@ -1116,9 +1109,15 @@
             }).then(res => {
                 if (!res.ok) return [];
                 return res.json();
-            }).catch(() => [])
+            }).catch(() => []),
+            fetch(`https://discord.com/api/users/@me/guilds/${GUILD_ID}/member`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            }).then(res => {
+                if (!res.ok) return null;
+                return res.json();
+            }).catch(() => null)
         ])
-        .then(([user, guilds]) => {
+        .then(([user, guilds, memberData]) => {
             const username = user.global_name || user.username;
             let avatarUrl = user.avatar 
                 ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`
@@ -1130,18 +1129,27 @@
             const timestamp = Number((useridBigInt >> 22n) + discordEpoch);
             const regDate = new Date(timestamp).toLocaleDateString('hu-HU', { year: 'numeric', month: 'short', day: 'numeric' });
 
-            const badges = parseDiscordFlags(user.public_flags);
-            
-            // Ellenőrzés, hogy van-e közös szerver (vagy ha a guilds lekérdezés sikeres)
-            const isMember = Array.isArray(guilds) && guilds.length > 0;
+            // Szervertagság ellenőrzése
+            const isMember = Array.isArray(guilds) && guilds.some(g => g.id === GUILD_ID);
+
+            // Rang meghatározása
+            let assignedRoleName = "Nincs rang";
+            if (memberData && memberData.roles) {
+                for (const roleId of rolePriority) {
+                    if (memberData.roles.includes(roleId)) {
+                        assignedRoleName = roleMapping[roleId];
+                        break;
+                    }
+                }
+            }
 
             localStorage.setItem('discord_username', username);
             localStorage.setItem('discord_avatar', avatarUrl);
             localStorage.setItem('discord_regdate', regDate);
-            localStorage.setItem('discord_badges', badges);
+            localStorage.setItem('discord_role', assignedRoleName);
             localStorage.setItem('discord_member', isMember ? 'Igen ✅' : 'Nem ❌');
 
-            showLoggedInUI(username, avatarUrl, regDate, badges, isMember ? 'Igen ✅' : 'Nem ❌');
+            showLoggedInUI(username, avatarUrl, regDate, assignedRoleName, isMember ? 'Igen ✅' : 'Nem ❌');
             return true;
         })
         .catch(err => {
@@ -1151,7 +1159,7 @@
         });
     }
 
-    function showLoggedInUI(username, avatarUrl, regDate, badges, memberStatus) {
+    function showLoggedInUI(username, avatarUrl, regDate, roleName, memberStatus) {
         const topProfile = document.getElementById('top-profile');
         document.getElementById('top-username-display').innerText = username;
         if (avatarUrl) {
@@ -1161,7 +1169,7 @@
         // Stat adatok kitöltése
         document.getElementById('statRegDate').textContent = regDate || '-';
         document.getElementById('statGuildStatus').textContent = memberStatus || 'Igen ✅';
-        document.getElementById('statBadges').textContent = badges || 'Nincs';
+        document.getElementById('statRole').textContent = roleName || 'Nincs rang';
 
         topProfile.classList.remove('hidden');
     }
@@ -1196,11 +1204,11 @@
                 const savedUsername = localStorage.getItem('discord_username');
                 const savedAvatar = localStorage.getItem('discord_avatar');
                 const savedRegDate = localStorage.getItem('discord_regdate');
-                const savedBadges = localStorage.getItem('discord_badges');
+                const savedRole = localStorage.getItem('discord_role');
                 const savedMember = localStorage.getItem('discord_member');
                 
                 if (token && savedUsername) {
-                    showLoggedInUI(savedUsername, savedAvatar, savedRegDate, savedBadges, savedMember);
+                    showLoggedInUI(savedUsername, savedAvatar, savedRegDate, savedRole, savedMember);
                     isAuthed = true;
                 }
             }
