@@ -78,13 +78,13 @@
         padding: 8px 16px 8px 10px;
         border-radius: 30px;
         border: 1px solid var(--accent);
-        box-shadow: 0 4px 20px rgba(30, 215, 96, 0.2);
+        box-shadow: 0 4px 20px color-mix(in srgb, var(--accent) 30%, transparent);
         cursor: pointer;
         transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
     }
     .top-right-profile:hover {
         transform: translateY(-2px);
-        box-shadow: 0 6px 25px rgba(30, 215, 96, 0.35);
+        box-shadow: 0 6px 25px color-mix(in srgb, var(--accent) 50%, transparent);
     }
     .top-right-profile img {
         width: 36px;
@@ -188,7 +188,7 @@
         border-top-color: var(--accent);
         border-radius: 50%;
         animation: spin 0.7s linear infinite;
-        box-shadow: 0 0 25px rgba(30, 215, 96, 0.25);
+        box-shadow: 0 0 25px color-mix(in srgb, var(--accent) 30%, transparent);
     }
 
     @keyframes spin {
@@ -460,8 +460,8 @@
 
     .casino-card:hover {
         transform: translateY(-5px);
-        border-color: rgba(30, 215, 96, 0.5);
-        box-shadow: 0 20px 45px rgba(30, 215, 96, 0.15);
+        border-color: color-mix(in srgb, var(--accent) 50%, transparent);
+        box-shadow: 0 20px 45px color-mix(in srgb, var(--accent) 20%, transparent);
     }
 
     .casino-logo {
@@ -510,7 +510,7 @@
 
     .casino-btn:hover {
         background: var(--accent-hover);
-        box-shadow: 0 6px 20px rgba(30, 215, 96, 0.4);
+        box-shadow: 0 6px 20px color-mix(in srgb, var(--accent) 40%, transparent);
     }
 
     @media (min-width: 700px) {
@@ -541,7 +541,7 @@
     }
 
     .spotify-player:hover {
-        border-color: rgba(30, 215, 96, 0.4);
+        border-color: color-mix(in srgb, var(--accent) 40%, transparent);
     }
 
     .sp-header {
@@ -777,7 +777,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        box-shadow: 0 0 15px rgba(30, 215, 96, 0.2);
+        box-shadow: 0 0 15px color-mix(in srgb, var(--accent) 30%, transparent);
     }
 
     .gate-badge img {
@@ -824,7 +824,7 @@
 
     .gate-btn-confirm { background: var(--btn-disabled-bg); color: var(--btn-disabled-text); }
     .gate-btn-confirm:not(:disabled) { background: var(--accent); color: #121212; }
-    .gate-btn-confirm:not(:disabled):hover { background: var(--accent-hover); box-shadow: 0 6px 18px rgba(30, 215, 96, 0.4); }
+    .gate-btn-confirm:not(:disabled):hover { background: var(--accent-hover); box-shadow: 0 6px 18px color-mix(in srgb, var(--accent) 40%, transparent); }
     .gate-btn-confirm:disabled { opacity: 0.5; cursor: not-allowed; }
 
     .gate-btn-discord {
