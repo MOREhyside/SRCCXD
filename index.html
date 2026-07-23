@@ -53,11 +53,19 @@
         background: #050814;
     }
 
-    /* ================= TOP RIGHT DISCORD PROFILE ================= */
-    .top-right-profile {
+    /* ================= TOP RIGHT DISCORD PROFILE & STATS WIDGET ================= */
+    .top-right-wrapper {
         position: fixed;
         top: 20px;
         right: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 10px;
+        z-index: 110;
+    }
+
+    .top-right-profile {
         display: flex;
         align-items: center;
         gap: 12px;
@@ -66,9 +74,8 @@
         -webkit-backdrop-filter: blur(12px);
         padding: 8px 16px 8px 10px;
         border-radius: 30px;
-        border: 1px solid var(--panel-border);
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-        z-index: 110;
+        border: 1px solid var(--accent);
+        box-shadow: 0 4px 20px rgba(30, 215, 96, 0.2);
         transition: opacity 0.3s ease;
     }
     .top-right-profile img {
@@ -99,6 +106,47 @@
         background: rgba(255, 255, 255, 0.1);
         color: #ff5555;
     }
+
+    /* Discord Stats Dropdown Card */
+    .discord-stats-card {
+        background: rgba(18, 18, 18, 0.95);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid var(--panel-border);
+        border-radius: 14px;
+        padding: 16px;
+        width: 260px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        font-size: 0.85rem;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .stats-header {
+        font-family: 'Space Grotesk', sans-serif;
+        font-weight: 700;
+        font-size: 0.95rem;
+        color: var(--accent);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+        padding-bottom: 8px;
+    }
+
+    .stats-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: var(--text-dim);
+    }
+
+    .stats-row span:last-child {
+        color: #fff;
+        font-weight: 600;
+    }
+
     .hidden {
         display: none !important;
     }
@@ -343,7 +391,6 @@
     .btn-telegram:hover  { background: #26A5E4; box-shadow: 0 8px 22px rgba(38, 165, 228, 0.45); }
     .btn-instagram:hover { background: #E1306C; box-shadow: 0 8px 22px rgba(225, 48, 108, 0.45); }
     .btn-email:hover     { background: #EA4335; box-shadow: 0 8px 22px rgba(234, 67, 53, 0.45); }
-    .btn-login:hover     { background: #5865F2; box-shadow: 0 8px 22px rgba(88, 101, 242, 0.45); }
 
     /* ================= KASZINO SZEKCIÓ ================= */
     .casino-section {
@@ -458,7 +505,7 @@
         .casino-grid { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
     }
 
-    /* ================= SPOTIFY FÜGGŐLEGES LEJÁTSZÓ (JOBB OLDALT) ================= */
+    /* ================= SPOTIFY FÜGGŐLEGES LEJÁTSZÓ ================= */
     .spotify-player {
         position: fixed;
         bottom: 20px;
@@ -553,7 +600,6 @@
         transform: scale(1.1);
     }
 
-    /* Idősáv / Progress */
     .sp-progress-area {
         display: flex;
         flex-direction: column;
@@ -594,7 +640,6 @@
         color: var(--text-dim);
     }
 
-    /* Vezérlők sora */
     .sp-controls {
         display: flex;
         align-items: center;
@@ -637,7 +682,6 @@
         background: #fff;
     }
 
-    /* Hangerő sáv alul */
     .sp-volume-row {
         display: flex;
         align-items: center;
@@ -655,7 +699,7 @@
         }
     }
 
-    /* ================= KAPU (1. LÉPÉS: DISCORD LOGIN, 2. LÉPÉS: 18+) ================= */
+    /* ================= KAPU (1. Discord Login, 2. 18+) ================= */
     .gate-overlay {
         position: fixed;
         inset: 0;
@@ -671,9 +715,7 @@
         transition: opacity 0.6s ease, backdrop-filter 0.6s ease;
     }
 
-    .gate-overlay.hidden { 
-        display: none; 
-    }
+    .gate-overlay.hidden { display: none; }
 
     .gate-overlay.hiding {
         opacity: 0;
@@ -797,11 +839,33 @@
 </head>
 <body class="no-js">
 
-<!-- ================= TOP RIGHT DISCORD PROFILE WIDGET ================= -->
-<div id="top-profile" class="top-right-profile hidden">
-    <img id="top-user-avatar" src="" alt="Avatar">
-    <span id="top-username-display"></span>
-    <button class="logout-btn" onclick="logout()">Kilépés</button>
+<!-- ================= TOP RIGHT DISCORD PROFILE & STATS WIDGET ================= -->
+<div id="topProfileWrapper" class="top-right-wrapper hidden">
+    <div id="top-profile" class="top-right-profile">
+        <img id="top-user-avatar" src="" alt="Avatar">
+        <span id="top-username-display"></span>
+        <button class="logout-btn" onclick="logout()">Kilépés</button>
+    </div>
+    
+    <!-- Statisztikák doboz a kép alapján -->
+    <div class="discord-stats-card">
+        <div class="stats-header">
+            <span>Discord Statisztikák</span>
+            <span style="font-size: 0.75rem; color: var(--accent);" id="memberCheckBadge">✓ ellenőrizve</span>
+        </div>
+        <div class="stats-row">
+            <span>Regisztráció:</span>
+            <span id="statRegDate">-</span>
+        </div>
+        <div class="stats-row">
+            <span>Szerver tag:</span>
+            <span id="statServerMember">-</span>
+        </div>
+        <div class="stats-row">
+            <span>Szerver rang:</span>
+            <span id="statServerRole">Nincs rang</span>
+        </div>
+    </div>
 </div>
 
 <!-- ================= KEZDETI BETÖLTŐ ANIMÁCIÓ ================= -->
@@ -815,7 +879,7 @@
     </video>
 </div>
 
-<!-- ================= SPOTIFY FÜGGŐLEGES LEJÁTSZÓ WIDGET ================= -->
+<!-- ================= SPOTIFY LEJÁTSZÓ ================= -->
 <audio id="bgMusic" preload="auto"></audio>
 
 <div class="spotify-player" id="spotifyPlayer">
@@ -867,7 +931,7 @@
     </div>
 </div>
 
-<!-- ================= TÖBBLÉPÉSES KAPU (1. Discord Login -> 2. 18+ Verification) ================= -->
+<!-- ================= KAPU (1. Discord Login -> 2. 18+ Verification) ================= -->
 <div class="gate-overlay" id="gateOverlay" role="dialog" aria-modal="true" aria-labelledby="gateTitle">
     <!-- 1. LÉPÉS: Discord Bejelentkezési Kapu -->
     <div class="gate-card" id="stepDiscord">
@@ -896,7 +960,7 @@
 </div>
 
 <main id="top">
-    <!-- ================= PROFIL KÁRTYA (MINDEN LINKkel) ================= -->
+    <!-- ================= PROFIL KÁRTYA ================= -->
     <div class="browser-window" id="mainCard">
         <div class="browser-header">
             <div class="dots" aria-hidden="true">
@@ -976,18 +1040,22 @@
 
     // ================= DISCORD OAUTH2 KONFIGURÁCIÓ =================
     const DISCORD_CLIENT_ID = '1529885857811660933';
+    const DISCORD_GUILD_ID = '1529406935517106276';
     const REDIRECT_URI = 'https://morehyside.github.io/SRCCXD/';
 
     function clearAuthStorage() {
         localStorage.removeItem('discord_token');
         localStorage.removeItem('discord_username');
         localStorage.removeItem('discord_avatar');
+        localStorage.removeItem('discord_reg_date');
+        localStorage.removeItem('discord_is_member');
     }
 
     function loginWithDiscord() {
         try {
             clearAuthStorage();
-            const authUrl = `https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=token&scope=identify`;
+            // FONTOS: A scope-hoz hozzáadva a 'guilds' is, hogy lekérdezhessük a szervertagságot!
+            const authUrl = `https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=token&scope=identify%20guilds`;
             window.location.href = authUrl;
         } catch (err) {
             console.error('Bejelentkezési hiba:', err);
@@ -999,41 +1067,72 @@
         window.location.href = REDIRECT_URI;
     }
 
-    function fetchUserData(token) {
-        return fetch('https://discord.com/api/users/@me', {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        })
-        .then(res => {
-            if (!res.ok) throw new Error('Discord API hiba, státusz: ' + res.status);
-            return res.json();
-        })
-        .then(user => {
+    async function fetchUserData(token) {
+        try {
+            // 1. Felhasználói adatok lekérése
+            const userRes = await fetch('https://discord.com/api/users/@me', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (!userRes.ok) throw new Error('Discord API hiba');
+            const user = await userRes.json();
+
             const username = user.global_name || user.username;
             let avatarUrl = user.avatar 
                 ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`
                 : `https://cdn.discordapp.com/embed/avatars/${Number(user.id >> 22n) % 6}.png`;
 
+            // Regisztrációs dátum kiszámítása a Snowflake ID-ből
+            const userIdBigInt = BigInt(user.id);
+            const timestampMs = Number((userIdBigInt >> 22n) + 1420070400000n);
+            const regDateObj = new Date(timestampMs);
+            const regDateFormatted = regDateObj.toLocaleDateString('hu-HU', { year: 'numeric', month: 'long', day: 'numeric' });
+
             localStorage.setItem('discord_username', username);
             localStorage.setItem('discord_avatar', avatarUrl);
-            showLoggedInUI(username, avatarUrl);
+            localStorage.setItem('discord_reg_date', regDateFormatted);
+
+            // 2. Szervertagság ellenőrzése közvetlenül a beállított Guild ID alapján
+            let isMember = false;
+            try {
+                const guildsRes = await fetch('https://discord.com/api/users/@me/guilds', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (guildsRes.ok) {
+                    const guilds = await guildsRes.json();
+                    isMember = guilds.some(g => g.id === DISCORD_GUILD_ID);
+                }
+            } catch (e) {
+                console.error('Szervertagság ellenőrzési hiba:', e);
+            }
+
+            localStorage.setItem('discord_is_member', isMember ? 'true' : 'false');
+
+            showLoggedInUI(username, avatarUrl, regDateFormatted, isMember);
             return true;
-        })
-        .catch(err => {
+        } catch (err) {
             console.error('Adatlekérési hiba:', err);
             clearAuthStorage();
             return false;
-        });
+        }
     }
 
-    function showLoggedInUI(username, avatarUrl) {
-        const topProfile = document.getElementById('top-profile');
+    function showLoggedInUI(username, avatarUrl, regDate, isMember) {
+        const topProfileWrapper = document.getElementById('topProfileWrapper');
         document.getElementById('top-username-display').innerText = username;
         if (avatarUrl) {
             document.getElementById('top-user-avatar').src = avatarUrl;
         }
-        topProfile.classList.remove('hidden');
+        
+        // Statisztikák kitöltése
+        document.getElementById('statRegDate').innerText = regDate || '-';
+        const serverMemberEl = document.getElementById('statServerMember');
+        if (isMember) {
+            serverMemberEl.innerHTML = 'Igen <span style="color: #27c93f;">✔</span>';
+        } else {
+            serverMemberEl.innerHTML = 'Nem <span style="color: #ff5f56;">❌</span>';
+        }
+
+        topProfileWrapper.classList.remove('hidden');
     }
 
     window.addEventListener('load', async function () {
@@ -1065,8 +1164,11 @@
                 const token = localStorage.getItem('discord_token');
                 const savedUsername = localStorage.getItem('discord_username');
                 const savedAvatar = localStorage.getItem('discord_avatar');
+                const savedRegDate = localStorage.getItem('discord_reg_date');
+                const savedIsMember = localStorage.getItem('discord_is_member') === 'true';
+
                 if (token && savedUsername) {
-                    showLoggedInUI(savedUsername, savedAvatar);
+                    showLoggedInUI(savedUsername, savedAvatar, savedRegDate, savedIsMember);
                     isAuthed = true;
                 }
             }
@@ -1100,7 +1202,7 @@
             startVideo();
         }
 
-        // ================= LEJÁTSZÁSI LISTA EGYEDI BORÍTÓKKAL =================
+        // ================= LEJÁTSZÁSI LISTA =================
         var playlist = [
             {
                 title: "Japan",
