@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Twitch Giveaway</title>
+    <title>Discord Giveaway</title>
     <style>
         * {
             box-sizing: border-box;
@@ -42,7 +42,7 @@
             height: 36px;
             border-radius: 50%;
             object-fit: cover;
-            border: 2px solid #9146ff;
+            border: 2px solid #5865F2;
         }
         .top-right-profile span {
             font-weight: 600;
@@ -87,9 +87,9 @@
             transform: translateX(-50%);
             width: 60px;
             height: 4px;
-            background: #9146ff;
+            background: #5865F2;
             border-radius: 0 0 4px 4px;
-            box-shadow: 0 0 12px #9146ff;
+            box-shadow: 0 0 12px #5865F2;
         }
 
         h1 {
@@ -111,7 +111,7 @@
             align-items: center;
             justify-content: center;
             gap: 12px;
-            background-color: #9146ff;
+            background-color: #5865F2;
             color: white;
             border: none;
             padding: 14px 24px;
@@ -122,12 +122,12 @@
             transition: all 0.25s ease;
             width: 100%;
             text-decoration: none;
-            box-shadow: 0 4px 15px rgba(145, 70, 255, 0.4);
+            box-shadow: 0 4px 15px rgba(88, 101, 242, 0.4);
         }
         .btn:hover {
-            background-color: #772ce8;
+            background-color: #4752C4;
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(145, 70, 255, 0.6);
+            box-shadow: 0 6px 20px rgba(88, 101, 242, 0.6);
         }
         .btn:active {
             transform: translateY(0);
@@ -136,12 +136,6 @@
             opacity: 0.7;
             cursor: not-allowed;
             transform: none;
-        }
-
-        .twitch-icon {
-            width: 20px;
-            height: 20px;
-            object-fit: contain;
         }
 
         .hidden {
@@ -181,13 +175,12 @@
     </div>
 
     <div class="container">
-        <h1>Twitch Giveaway</h1>
-        <p id="info-text">Jelentkezz be a Twitch fiókoddal, hogy eséllyel indulj a sorsoláson!</p>
+        <h1>Discord Giveaway</h1>
+        <p id="info-text">Jelentkezz be a Discord fiókoddal, hogy eséllyel indulj a sorsoláson!</p>
 
         <div id="login-section">
-            <button id="login-btn" class="btn" onclick="loginWithTwitch()">
-                <img src="twitch-logo.png" alt="Twitch" class="twitch-icon" onerror="this.style.display='none'">
-                Bejelentkezés Twitch-csel
+            <button id="login-btn" class="btn" onclick="loginWithDiscord()">
+                Bejelentkezés Discord-ral
             </button>
         </div>
 
@@ -202,7 +195,7 @@
     </div>
 
     <script>
-        const TWITCH_CLIENT_ID = 'v1slo89js8rpvo2wj7f4bhm29a5w0w';
+        const DISCORD_CLIENT_ID = 'IDE_ÍRD_BE_A_DISCORD_CLIENT_ID_D ET';
         const REDIRECT_URI = 'https://morehyside.github.io/SRCCXD/';
         const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx9n9FPUMlFtLOeDNyYqB8dSu6rr2HNcqGm_SeojIV_6t6GOkdYn9cVPeVDLQoWuc1Q/exec';
 
@@ -213,15 +206,15 @@
         }
 
         function clearAuthStorage() {
-            localStorage.removeItem('twitch_token');
-            localStorage.removeItem('twitch_username');
-            localStorage.removeItem('twitch_avatar');
+            localStorage.removeItem('discord_token');
+            localStorage.removeItem('discord_username');
+            localStorage.removeItem('discord_avatar');
         }
 
-        function loginWithTwitch() {
+        function loginWithDiscord() {
             try {
                 clearAuthStorage();
-                const authUrl = `https://id.twitch.tv/oauth2/authorize?client_id=${TWITCH_CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=token&scope=user:read:email`;
+                const authUrl = `https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=token&scope=identify`;
                 window.location.href = authUrl;
             } catch (err) {
                 showUIError('Bejelentkezési hiba: ' + err.message);
@@ -237,19 +230,19 @@
                 const errorDescription = params.get('error_description');
 
                 if (errorParam) {
-                    showUIError('Twitch elutasította: ' + errorParam + (errorDescription ? ' (' + decodeURIComponent(errorDescription) + ')' : ''));
+                    showUIError('Discord elutasította: ' + errorParam + (errorDescription ? ' (' + decodeURIComponent(errorDescription) + ')' : ''));
                     window.history.replaceState({}, document.title, window.location.pathname);
                     return;
                 }
 
                 if (accessToken) {
                     window.history.replaceState({}, document.title, window.location.pathname);
-                    localStorage.setItem('twitch_token', accessToken);
+                    localStorage.setItem('discord_token', accessToken);
                     fetchUserData(accessToken);
                     return;
                 }
 
-                const token = localStorage.getItem('twitch_token');
+                const token = localStorage.getItem('discord_token');
                 if (token) {
                     fetchUserData(token);
                 }
@@ -259,23 +252,24 @@
         };
 
         function fetchUserData(token) {
-            fetch('https://api.twitch.tv/helix/users', {
+            fetch('https://discord.com/api/users/@me', {
                 headers: {
-                    'Client-ID': TWITCH_CLIENT_ID,
                     'Authorization': `Bearer ${token}`
                 }
             })
             .then(res => {
-                if (!res.ok) throw new Error('Twitch API hiba, státusz: ' + res.status);
+                if (!res.ok) throw new Error('Discord API hiba, státusz: ' + res.status);
                 return res.json();
             })
-            .then(data => {
-                if (data && data.data && data.data[0]) {
-                    const user = data.data[0];
-                    showGiveawayUI(user.display_name, user.profile_image_url);
-                } else {
-                    throw new Error('Üres válasz a Twitchtől.');
-                }
+            .then(user => {
+                const username = user.global_name || user.username;
+                let avatarUrl = user.avatar 
+                    ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`
+                    : `https://cdn.discordapp.com/embed/avatars/${Number(user.id >> 22n) % 6}.png`;
+
+                localStorage.setItem('discord_username', username);
+                localStorage.setItem('discord_avatar', avatarUrl);
+                showGiveawayUI(username, avatarUrl);
             })
             .catch(err => {
                 showUIError('Adatlekérési hiba: ' + err.message);
@@ -305,7 +299,7 @@
         }
 
         function enterGiveaway() {
-            const username = localStorage.getItem('twitch_username');
+            const username = localStorage.getItem('discord_username');
             if (!username) {
                 showUIError('Nincs bejelentkezett felhasználó!');
                 return;
