@@ -1,10 +1,13 @@
 <!DOCTYPE html>
 <html lang="hu">
 <head>
-<meta charset="UTF-8">
+<meta charset="UTF.8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>srccxd</title>
 <meta name="description" content="casi (srccxd) hivatalos linkjei — Discord, Twitch, Telegram, Instagram és elérhetőség egy helyen.">
+
+<!-- Supabase JS Client a globális, egyedi Discord ID alapú számláláshoz -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <!-- Előbetöltések a jobb LCP és teljesítmény érdekében -->
 <link rel="preload" href="bg.jpg" as="image">
@@ -849,6 +852,23 @@
         padding: 0 20px 30px;
         font-size: 0.72rem;
         color: rgba(144, 160, 200, 0.5);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .visitor-counter {
+        font-size: 0.75rem;
+        color: var(--text-dim);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+    }
+
+    .visitor-counter strong {
+        color: var(--accent);
     }
 </style>
 </head>
@@ -1042,19 +1062,74 @@
 </main>
 
 <footer>
-    &copy; <span id="year"></span> casi
+    <div class="visitor-counter">
+        <span>👀 Egyedi látogatások: <strong id="visitCount">...</strong></span>
+    </div>
+    <span>&copy; <span id="year"></span> casi</span>
 </footer>
 
 <script>
     document.body.classList.remove('no-js');
     document.getElementById('year').textContent = new Date().getFullYear();
 
+    // ================= SUPABASE KONFIGURÁCIÓ (Opcionális, de ajánlott a globális egyedi számláláshoz) =================
+    // Ha regisztrálsz egy ingyenes fiókot a supabase.com-on és csinálsz egy 'visitors' táblát (discord_id mezővel),
+    // ide beillesztheted az adataidat. Ha üres hagyod, a script automatikusan fallback módban fut.
+    const SUPABASE_URL = 'ITT_A_SUPABASE_URL_CIMED'; 
+    const SUPABASE_ANON_KEY = 'ITT_A_SUPABASE_ANON_KULCSOD';
+    let supabaseClient = null;
+    
+    if (SUPABASE_URL !== 'ITT_A_SUPABASE_URL_CIMED' && SUPABASE_ANON_KEY !== 'ITT_A_SUPABASE_ANON_KULCSOD') {
+        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    }
+
+    // ================= EGYEDI LÁTOGATÓI SZÁMLÁLÓ DISCORD ID ALAPJÁN =================
+    async function handleUniqueVisit(userId) {
+        let currentVisits = parseInt(localStorage.getItem('srccxd_unique_visits') || '1420');
+        
+        if (supabaseClient) {
+            try {
+                // Ellenőrizzük, hogy ez a Discord ID szerepel-e már az adatbázisban
+                let { data, error } = await supabaseClient
+                    .from('visitors')
+                    .select('discord_id')
+                    .eq('discord_id', userId)
+                    .maybeSingle();
+
+                if (!data) {
+                    // Ha még nem szerepel, rögzítjük
+                    await supabaseClient.from('visitors').insert([{ discord_id: userId }]);
+                }
+
+                // Lekérjük a teljes egyedi látogatói számot
+                let { count, error: countError } = await supabaseClient
+                    .from('visitors')
+                    .select('*', { count: 'exact', head: true });
+
+                if (count !== null && !countError) {
+                    document.getElementById('visitCount').textContent = count.toLocaleString('hu-HU');
+                    return;
+                }
+            } catch (err) {
+                console.error('Supabase hiba, fallback mód használata:', err);
+            }
+        }
+
+        // Helyi (Fallback) egyedi ellenőrzés Discord ID alapján
+        let userTrackedKey = 'counted_discord_' + userId;
+        if (!localStorage.getItem(userTrackedKey)) {
+            localStorage.setItem(userTrackedKey, 'true');
+            currentVisits += 1;
+            localStorage.setItem('srccxd_unique_visits', currentVisits);
+        }
+        document.getElementById('visitCount').textContent = currentVisits.toLocaleString('hu-HU');
+    }
+
     // ================= DISCORD OAUTH2 KONFIGURÁCIÓ =================
     const DISCORD_CLIENT_ID = '1529885857811660933';
     const DISCORD_GUILD_ID = '1529406935517106276';
     const REDIRECT_URI = 'https://morehyside.github.io/SRCCXD/';
 
-    // Megadott szerver rangok ID-i és nevei
     const ROLE_MAP = {
         '1529407455442899044': '.!',
         '1529450339034595328': 'Server manager',
@@ -1099,6 +1174,9 @@
             });
             if (!userRes.ok) throw new Error('Discord API hiba');
             const user = await userRes.json();
+
+            // Meghívjuk az egyedi látogatói számlálót a Discord user ID-val
+            await handleUniqueVisit(user.id);
 
             const username = user.global_name || user.username;
             let avatarUrl = user.avatar 
@@ -1201,6 +1279,9 @@
                 const token = localStorage.getItem('discord_token');
                 if (token) {
                     isAuthed = await fetchUserData(token);
+                } else {
+                    // Ha még nincs bejelentkezve, alapértelmezett kiírás
+                    document.getElementById('visitCount').textContent = Number(localStorage.getItem('srccxd_unique_visits') || '1420').toLocaleString('hu-HU');
                 }
             }
         } catch (err) {
