@@ -702,6 +702,10 @@
         padding-top: 12px;
     }
 
+    @media (max-width: 768px) {
+        .spotify-player { display: none !important; }
+    }
+
     @media (max-width: 480px) {
         .spotify-player {
             bottom: 10px;
@@ -1306,6 +1310,8 @@
     });
 
     document.addEventListener('DOMContentLoaded', function () {
+        var isMobile = window.matchMedia('(max-width: 768px)').matches;
+
         var bgVideo = document.querySelector('.bg-video');
         if (bgVideo) {
             var startVideo = function () {
@@ -1470,11 +1476,13 @@
             var bgVideo = document.querySelector('.bg-video');
             if (bgVideo) { bgVideo.play(); }
 
-            bgMusic.play().then(function () {
-                updatePlayIcon(true);
-            }).catch(function (err) {
-                console.log("Autoplay blocked or failed:", err);
-            });
+            if (!isMobile) {
+                bgMusic.play().then(function () {
+                    updatePlayIcon(true);
+                }).catch(function (err) {
+                    console.log("Autoplay blocked or failed:", err);
+                });
+            }
 
             setTimeout(function () {
                 gateOverlay.classList.add('hidden');
