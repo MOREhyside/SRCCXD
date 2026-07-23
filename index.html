@@ -76,7 +76,12 @@
         border-radius: 30px;
         border: 1px solid var(--accent);
         box-shadow: 0 4px 20px rgba(30, 215, 96, 0.2);
-        transition: opacity 0.3s ease;
+        cursor: pointer;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .top-right-profile:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 25px rgba(30, 215, 96, 0.35);
     }
     .top-right-profile img {
         width: 36px;
@@ -121,6 +126,11 @@
         display: flex;
         flex-direction: column;
         gap: 12px;
+        transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+
+    .discord-stats-card.hidden {
+        display: none !important;
     }
 
     .stats-header {
@@ -841,14 +851,14 @@
 
 <!-- ================= TOP RIGHT DISCORD PROFILE & STATS WIDGET ================= -->
 <div id="topProfileWrapper" class="top-right-wrapper hidden">
-    <div id="top-profile" class="top-right-profile">
+    <div id="top-profile" class="top-right-profile" onclick="toggleStatsCard()">
         <img id="top-user-avatar" src="" alt="Avatar">
         <span id="top-username-display"></span>
-        <button class="logout-btn" onclick="logout()">Kilépés</button>
+        <button class="logout-btn" onclick="event.stopPropagation(); logout();">Kilépés</button>
     </div>
     
-    <!-- Statisztikák doboz a kép alapján -->
-    <div class="discord-stats-card">
+    <!-- Statisztikák doboz (alapból rejtve, a profilra kattintva nyílik meg) -->
+    <div id="discordStatsCard" class="discord-stats-card hidden">
         <div class="stats-header">
             <span>Discord Statisztikák</span>
             <span style="font-size: 0.75rem; color: var(--accent);" id="memberCheckBadge">✓ ellenőrizve</span>
@@ -1054,7 +1064,6 @@
     function loginWithDiscord() {
         try {
             clearAuthStorage();
-            // FONTOS: A scope-hoz hozzáadva a 'guilds' is, hogy lekérdezhessük a szervertagságot!
             const authUrl = `https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=token&scope=identify%20guilds`;
             window.location.href = authUrl;
         } catch (err) {
@@ -1065,6 +1074,11 @@
     function logout() {
         clearAuthStorage();
         window.location.href = REDIRECT_URI;
+    }
+
+    function toggleStatsCard() {
+        const statsCard = document.getElementById('discordStatsCard');
+        statsCard.classList.toggle('hidden');
     }
 
     async function fetchUserData(token) {
@@ -1162,14 +1176,9 @@
                 isAuthed = await fetchUserData(accessToken);
             } else {
                 const token = localStorage.getItem('discord_token');
-                const savedUsername = localStorage.getItem('discord_username');
-                const savedAvatar = localStorage.getItem('discord_avatar');
-                const savedRegDate = localStorage.getItem('discord_reg_date');
-                const savedIsMember = localStorage.getItem('discord_is_member') === 'true';
-
-                if (token && savedUsername) {
-                    showLoggedInUI(savedUsername, savedAvatar, savedRegDate, savedIsMember);
-                    isAuthed = true;
+                if (token) {
+                    // Mindig újra lekérjük a tokennel, így a regisztrációs dátum és adatok tuti frissülnek és nem lesznek hiányosak
+                    isAuthed = await fetchUserData(token);
                 }
             }
         } catch (err) {
