@@ -1,23 +1,24 @@
 <!DOCTYPE html>
-<html lang="hu">
+<html lang="en">
 <head>
 <meta charset="UTF.8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>srccxd</title>
-<meta name="description" content="casi (srccxd) hivatalos linkjei — Discord, Twitch, Telegram, Instagram és elérhetőség egy helyen.">
+<meta name="description" content="casi (srccxd) official links — Discord, Twitch, Telegram, Instagram and contact info all in one place.">
 
-<!-- Supabase JS Client a globális, egyedi Discord ID alapú számláláshoz -->
+<!-- Supabase JS Client for global unique Discord ID based counting -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<!-- Előbetöltések a jobb LCP és teljesítmény érdekében -->
+<!-- Preloads for better LCP and performance -->
+<link rel="preload" href="bg.jpg" as="image">
 <link rel="preload" href="pfp.png" as="image">
 <link rel="preload" href="Japan.jpg" as="image">
-<link rel="preload" href="Die to Live.jpg" as="image">
+<link rel="preload" href="Dark Queen.jpg" as="image">
 <link rel="preload" href="Shoot Back.jpg" as="image">
 
 <!-- Social preview -->
 <meta property="og:title" content="srccxd">
-<meta property="og:description" content="Discord, Twitch, Telegram, Instagram és elérhetőség egy helyen.">
+<meta property="og:description" content="Discord, Twitch, Telegram, Instagram and contact info all in one place.">
 <meta property="og:image" content="pfp.png">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary">
@@ -163,7 +164,7 @@
         display: none !important;
     }
 
-    /* ================= KEZDETI BETÖLTŐ ANIMÁCIÓ (PRELOADER) ================= */
+    /* ================= INITIAL LOADER ANIMATION (PRELOADER) ================= */
     .intro-loader {
         position: fixed;
         inset: 0;
@@ -194,13 +195,14 @@
         to { transform: rotate(360deg); }
     }
 
-    /* ================= HÁTTÉR ================= */
+    /* ================= BACKGROUND ================= */
     .bg {
         position: fixed;
         inset: 0;
         z-index: -2;
         overflow: hidden;
-        background: #050814;
+        background: #050814 url('bg.jpg') no-repeat center center;
+        background-size: cover;
     }
 
     .bg-video {
@@ -223,10 +225,9 @@
     @media (max-width: 768px), (prefers-reduced-motion: reduce) {
         *, *::before, *::after { transition: none !important; animation: none !important; }
         .bg-video { display: none; }
-        .gate-card { opacity: 1 !important; transform: none !important; }
     }
 
-    /* ================= FŐ TARTALOM ================= */
+    /* ================= MAIN CONTENT ================= */
     main {
         position: relative;
         z-index: 5;
@@ -237,7 +238,7 @@
         gap: 40px;
     }
 
-    /* ================= KÁRTYA (PROFIL) ================= */
+    /* ================= CARD (PROFILE) ================= */
     .browser-window {
         width: 100%;
         max-width: 420px;
@@ -272,7 +273,7 @@
 
     .content { padding: 34px 30px 28px; text-align: center; }
 
-    /* ================= LÉPCSŐZETES ANIMÁCIÓK ELEMEI ================= */
+    /* ================= STAGGERED ANIMATION ELEMENTS ================= */
     .profile-container, .wordmark, .links-list li, .casino-section > * {
         opacity: 0;
         transform: translateY(15px);
@@ -404,7 +405,7 @@
     .btn-instagram:hover { background: #E1306C; box-shadow: 0 8px 22px rgba(225, 48, 108, 0.45); }
     .btn-email:hover     { background: #EA4335; box-shadow: 0 8px 22px rgba(234, 67, 53, 0.45); }
 
-    /* ================= KASZINO SZEKCIÓ ================= */
+    /* ================= CASINO SECTION ================= */
     .casino-section {
         width: 100%;
         max-width: 420px;
@@ -517,7 +518,7 @@
         .casino-grid { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
     }
 
-    /* ================= SPOTIFY FÜGGŐLEGES LEJÁTSZÓ ================= */
+    /* ================= SPOTIFY VERTICAL PLAYER ================= */
     .spotify-player {
         position: fixed;
         bottom: 20px;
@@ -702,10 +703,6 @@
         padding-top: 12px;
     }
 
-    @media (max-width: 768px) {
-        .spotify-player { display: none !important; }
-    }
-
     @media (max-width: 480px) {
         .spotify-player {
             bottom: 10px;
@@ -715,7 +712,7 @@
         }
     }
 
-    /* ================= KAPU (1. Discord Login, 2. 18+) ================= */
+    /* ================= GATE (1. Discord Login, 2. 18+) ================= */
     .gate-overlay {
         position: fixed;
         inset: 0;
@@ -876,7 +873,7 @@
 </head>
 <body class="no-js">
 
-<!-- Oldal betöltésekor azonnal alkalmazzuk a mentett színt, ha van -->
+<!-- Immediately apply the saved color on page load, if any -->
 <script>
     const savedAccent = localStorage.getItem('discord_accent_color');
     if (savedAccent) {
@@ -890,42 +887,42 @@
     <div id="top-profile" class="top-right-profile" onclick="toggleStatsCard()">
         <img id="top-user-avatar" src="" alt="Avatar">
         <span id="top-username-display"></span>
-        <button class="logout-btn" onclick="event.stopPropagation(); logout();">Kilépés</button>
+        <button class="logout-btn" onclick="event.stopPropagation(); logout();">Logout</button>
     </div>
     
-    <!-- Statisztikák doboz -->
+    <!-- Statistics box -->
     <div id="discordStatsCard" class="discord-stats-card hidden">
         <div class="stats-header">
-            <span>Discord Statisztikák</span>
-            <span style="font-size: 0.75rem; color: var(--accent);" id="memberCheckBadge">✓ ellenőrizve</span>
+            <span>Discord Statistics</span>
+            <span style="font-size: 0.75rem; color: var(--accent);" id="memberCheckBadge">✓ verified</span>
         </div>
         <div class="stats-row">
-            <span>Regisztráció:</span>
+            <span>Registered:</span>
             <span id="statRegDate">-</span>
         </div>
         <div class="stats-row">
-            <span>Szerver tag:</span>
+            <span>Server member:</span>
             <span id="statServerMember">-</span>
         </div>
         <div class="stats-row">
-            <span>Szerver rang:</span>
-            <span id="statServerRole">Nincs rang</span>
+            <span>Server rank:</span>
+            <span id="statServerRole">No rank</span>
         </div>
     </div>
 </div>
 
-<!-- ================= KEZDETI BETÖLTŐ ANIMÁCIÓ ================= -->
+<!-- ================= INITIAL LOADER ANIMATION ================= -->
 <div class="intro-loader" id="introLoader">
     <div class="loader-spinner"></div>
 </div>
 
 <div class="bg">
-    <video class="bg-video" autoplay muted loop playsinline aria-hidden="true">
+    <video class="bg-video" autoplay muted loop playsinline poster="bg.jpg" aria-hidden="true">
         <source src="bg-video.mp4" type="video/mp4">
     </video>
 </div>
 
-<!-- ================= SPOTIFY LEJÁTSZÓ ================= -->
+<!-- ================= SPOTIFY PLAYER ================= -->
 <audio id="bgMusic" preload="auto"></audio>
 
 <div class="spotify-player" id="spotifyPlayer">
@@ -940,13 +937,13 @@
             <div class="sp-title" id="spTitle">Japan</div>
             <div class="sp-artist" id="spArtist">Juice WRLD</div>
         </div>
-        <button class="sp-like-btn" aria-label="Kedvencekbe mentés">
+        <button class="sp-like-btn" aria-label="Save to favorites">
             <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
         </button>
     </div>
 
     <div class="sp-progress-area">
-        <input type="range" id="spProgress" min="0" max="100" value="0" class="sp-slider" aria-label="Haladási sáv">
+        <input type="range" id="spProgress" min="0" max="100" value="0" class="sp-slider" aria-label="Progress bar">
         <div class="sp-time-row">
             <span id="spCurrentTime">0:00</span>
             <span id="spDuration">0:00</span>
@@ -954,41 +951,41 @@
     </div>
 
     <div class="sp-controls">
-        <button class="sp-control-btn" id="spShuffleBtn" aria-label="Keverés">
+        <button class="sp-control-btn" id="spShuffleBtn" aria-label="Shuffle">
             <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z"/></svg>
         </button>
-        <button class="sp-control-btn" id="spPrevBtn" aria-label="Előző szám">
+        <button class="sp-control-btn" id="spPrevBtn" aria-label="Previous track">
             <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
         </button>
-        <button class="sp-play-btn-large" id="spPlayBtn" aria-label="Lejátszás / Szünet">
+        <button class="sp-play-btn-large" id="spPlayBtn" aria-label="Play / Pause">
             <svg id="spIcon" viewBox="0 0 24 24" width="20" height="20" fill="#121212"><path d="M8 5v14l11-7z"/></svg>
         </button>
-        <button class="sp-control-btn" id="spNextBtn" aria-label="Következő szám">
+        <button class="sp-control-btn" id="spNextBtn" aria-label="Next track">
             <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
         </button>
-        <button class="sp-control-btn" id="spRepeatBtn" aria-label="Ismétlés">
+        <button class="sp-control-btn" id="spRepeatBtn" aria-label="Repeat">
             <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg>
         </button>
     </div>
 
     <div class="sp-volume-row">
         <svg viewBox="0 0 24 24" width="16" height="16" fill="#b3b3b3"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
-        <input type="range" id="spVolume" min="0" max="1" step="0.01" value="0.15" class="sp-slider" aria-label="Hangerő">
+        <input type="range" id="spVolume" min="0" max="1" step="0.01" value="0.15" class="sp-slider" aria-label="Volume">
     </div>
 </div>
 
-<!-- ================= KAPU ================= -->
+<!-- ================= GATE ================= -->
 <div class="gate-overlay" id="gateOverlay" role="dialog" aria-modal="true" aria-labelledby="gateTitle">
     <div class="gate-card" id="stepDiscord">
         <div class="gate-badge" aria-hidden="true">
             <img src="discord-logo.png" alt="">
         </div>
-        <h2 id="gateTitle">Discord Bejelentkezés</h2>
-        <p style="font-size: 0.88rem; color: var(--text-dim); margin-bottom: 20px;">A folytatáshoz először jelentkezz be a Discord fiókoddal.</p>
+        <h2 id="gateTitle">Discord Login</h2>
+        <p style="font-size: 0.88rem; color: var(--text-dim); margin-bottom: 20px;">Please log in with your Discord account first to continue.</p>
         <button class="gate-btn gate-btn-discord" onclick="loginWithDiscord()">
             <img src="discord-logo.png" alt="" width="20" height="20"> Login with Discord
         </button>
-        <button class="gate-btn gate-btn-leave" id="btnLeaveDiscord">Mégsem</button>
+        <button class="gate-btn gate-btn-leave" id="btnLeaveDiscord">Cancel</button>
     </div>
 
     <div class="gate-card hidden" id="stepAge">
@@ -1015,16 +1012,16 @@
 
         <div class="content">
             <div class="profile-container">
-                <img src="pfp.png" alt="Profilkép" class="profile-img" width="108" height="108" loading="eager">
+                <img src="pfp.png" alt="Profile picture" class="profile-img" width="108" height="108" loading="eager">
             </div>
 
             <div class="wordmark">SRCCXD</div>
 
-            <nav aria-label="Közösségi linkek">
+            <nav aria-label="Social links">
                 <ul class="links-list">
                     <li>
                         <a href="https://discord.gg/kNU6CpUC5Q" target="_blank" rel="noopener noreferrer" class="link-btn btn-discord">
-                            <img src="discord-logo.png" alt="" class="link-icon" width="40" height="40" loading="lazy"> Discord Szerver
+                            <img src="discord-logo.png" alt="" class="link-icon" width="40" height="40" loading="lazy"> Discord Server
                         </a>
                     </li>
                     <li>
@@ -1051,7 +1048,7 @@
             </nav>
 
             <div class="visitor-counter">
-                <span>👀 Egyedi látogatások: <strong id="visitCount">...</strong></span>
+                <span>👀 Unique visits: <strong id="visitCount">...</strong></span>
             </div>
         </div>
     </div>
@@ -1059,18 +1056,18 @@
     <div class="casino-section" id="casinoSection">
         <div class="section-header-title">
             🎰 Featured Casino
-            <span class="ad-tag">Hirdetés</span>
+            <span class="ad-tag">Advertisement</span>
         </div>
 
         <div class="casino-grid">
             <div class="casino-card">
                 <img src="spinline-logo.png" alt="SpinLine" class="casino-logo" loading="lazy">
                 <ul class="casino-perks">
-                    <li class="casino-perk-item">Üdvözlő csomag</li>
-                    <li class="casino-perk-item">Akár 720 000 Ft</li>
-                    <li class="casino-perk-item">+ 800 Ingyenes Pörgetés</li>
+                    <li class="casino-perk-item">Welcome package</li>
+                    <li class="casino-perk-item">Up to 720,000 HUF</li>
+                    <li class="casino-perk-item">+ 800 Free Spins</li>
                 </ul>
-                <a href="https://spln.pleotra.com/?mid=382466_2215736" target="_blank" rel="noopener noreferrer" class="casino-btn">Játék most</a>
+                <a href="https://spln.pleotra.com/?mid=382466_2215736" target="_blank" rel="noopener noreferrer" class="casino-btn">Play now</a>
             </div>
         </div>
     </div>
@@ -1112,11 +1109,11 @@
                     .select('*', { count: 'exact', head: true });
 
                 if (count !== null && !countError) {
-                    document.getElementById('visitCount').textContent = count.toLocaleString('hu-HU');
+                    document.getElementById('visitCount').textContent = count.toLocaleString('en-US');
                     return;
                 }
             } catch (err) {
-                console.error('Supabase hiba, fallback mód használata:', err);
+                console.error('Supabase error, using fallback mode:', err);
             }
         }
 
@@ -1126,7 +1123,7 @@
             currentVisits += 1;
             localStorage.setItem('srccxd_unique_visits', currentVisits);
         }
-        document.getElementById('visitCount').textContent = currentVisits.toLocaleString('hu-HU');
+        document.getElementById('visitCount').textContent = currentVisits.toLocaleString('en-US');
     }
 
     const DISCORD_CLIENT_ID = '1529885857811660933';
@@ -1159,7 +1156,7 @@
             const authUrl = `https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=token&scope=${scopes}`;
             window.location.href = authUrl;
         } catch (err) {
-            console.error('Bejelentkezési hiba:', err);
+            console.error('Login error:', err);
         }
     }
 
@@ -1178,10 +1175,10 @@
             const userRes = await fetch('https://discord.com/api/users/@me', {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
-            if (!userRes.ok) throw new Error('Discord API hiba');
+            if (!userRes.ok) throw new Error('Discord API error');
             const user = await userRes.json();
 
-            // Dinamikus Discord profilszín alkalmazása
+            // Apply dynamic Discord profile color
             if (user.accent_color) {
                 const hexColor = '#' + user.accent_color.toString(16).padStart(6, '0');
                 document.documentElement.style.setProperty('--accent', hexColor);
@@ -1199,14 +1196,14 @@
             const userIdBigInt = BigInt(user.id);
             const timestampMs = Number((userIdBigInt >> 22n) + 1420070400000n);
             const regDateObj = new Date(timestampMs);
-            const regDateFormatted = regDateObj.toLocaleDateString('hu-HU', { year: 'numeric', month: 'long', day: 'numeric' });
+            const regDateFormatted = regDateObj.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
             localStorage.setItem('discord_username', username);
             localStorage.setItem('discord_avatar', avatarUrl);
             localStorage.setItem('discord_reg_date', regDateFormatted);
 
             let isMember = false;
-            let highestRole = 'Nincs rang';
+            let highestRole = 'No rank';
 
             try {
                 const memberRes = await fetch(`https://discord.com/api/users/@me/guilds/${DISCORD_GUILD_ID}/member`, {
@@ -1227,7 +1224,7 @@
                     }
                 }
             } catch (e) {
-                console.error('Szerver tagság/rang lekérdezési hiba:', e);
+                console.error('Server membership/role lookup error:', e);
             }
 
             localStorage.setItem('discord_is_member', isMember ? 'true' : 'false');
@@ -1236,7 +1233,7 @@
             showLoggedInUI(username, avatarUrl, regDateFormatted, isMember, highestRole);
             return true;
         } catch (err) {
-            console.error('Adatlekérési hiba:', err);
+            console.error('Data fetch error:', err);
             clearAuthStorage();
             return false;
         }
@@ -1253,12 +1250,12 @@
         
         const serverMemberEl = document.getElementById('statServerMember');
         if (isMember) {
-            serverMemberEl.innerHTML = 'Igen <span style="color: #27c93f;">✔</span>';
+            serverMemberEl.innerHTML = 'Yes <span style="color: #27c93f;">✔</span>';
         } else {
-            serverMemberEl.innerHTML = 'Nem <span style="color: #ff5f56;">❌</span>';
+            serverMemberEl.innerHTML = 'No <span style="color: #ff5f56;">❌</span>';
         }
 
-        document.getElementById('statServerRole').innerText = roleName || 'Nincs rang';
+        document.getElementById('statServerRole').innerText = roleName || 'No rank';
 
         topProfileWrapper.classList.remove('hidden');
     }
@@ -1293,11 +1290,11 @@
                 if (token) {
                     isAuthed = await fetchUserData(token);
                 } else {
-                    document.getElementById('visitCount').textContent = Number(localStorage.getItem('srccxd_unique_visits') || '1420').toLocaleString('hu-HU');
+                    document.getElementById('visitCount').textContent = Number(localStorage.getItem('srccxd_unique_visits') || '1420').toLocaleString('en-US');
                 }
             }
         } catch (err) {
-            console.error('Token feldolgozási hiba:', err);
+            console.error('Token processing error:', err);
         }
 
         if (isAuthed) {
@@ -1310,8 +1307,6 @@
     });
 
     document.addEventListener('DOMContentLoaded', function () {
-        var isMobile = window.matchMedia('(max-width: 768px)').matches;
-
         var bgVideo = document.querySelector('.bg-video');
         if (bgVideo) {
             var startVideo = function () {
@@ -1336,10 +1331,10 @@
                 cover: "Japan.jpg"
             },
             {
-                title: "Die to Live",
-                artist: "Juice WRLD",
-                src: "audio2.mp3",
-                cover: "Die to Live.jpg"
+                title: "Dark Queen",
+                artist: "Lil Uzi Vert",
+                src: "Dark Queen.mp3",
+                cover: "Dark Queen.jpg"
             },
             {
                 title: "Shoot Back",
@@ -1476,13 +1471,11 @@
             var bgVideo = document.querySelector('.bg-video');
             if (bgVideo) { bgVideo.play(); }
 
-            if (!isMobile) {
-                bgMusic.play().then(function () {
-                    updatePlayIcon(true);
-                }).catch(function (err) {
-                    console.log("Autoplay blocked or failed:", err);
-                });
-            }
+            bgMusic.play().then(function () {
+                updatePlayIcon(true);
+            }).catch(function (err) {
+                console.log("Autoplay blocked or failed:", err);
+            });
 
             setTimeout(function () {
                 gateOverlay.classList.add('hidden');
