@@ -720,6 +720,84 @@
         }
     }
 
+    /* ================= BLACKJACK WIDGET ================= */
+    .blackjack-widget {
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        z-index: 95;
+        width: 280px;
+        background: rgba(18, 18, 18, 0.92);
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+        border: 1px solid var(--panel-border);
+        border-radius: 18px;
+        padding: 16px;
+        color: var(--text-main);
+        font-family: 'Inter', sans-serif;
+        box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+    }
+    .blackjack-widget.hidden { display: none !important; }
+    .bj-header {
+        font-family: 'Space Grotesk', sans-serif;
+        font-weight: 700;
+        font-size: 0.95rem;
+        color: var(--accent);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+        padding-bottom: 8px;
+    }
+    .bj-stats {
+        font-size: 0.82rem;
+        color: var(--text-dim);
+        margin-bottom: 10px;
+        display: flex;
+        justify-content: space-between;
+    }
+    .bj-stats span strong { color: #fff; }
+    .bj-table-area {
+        background: rgba(0,0,0,0.3);
+        border-radius: 10px;
+        padding: 10px;
+        margin-bottom: 12px;
+        font-size: 0.85rem;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+    .bj-controls {
+        display: flex;
+        gap: 8px;
+    }
+    .bj-btn {
+        flex: 1;
+        padding: 8px;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 0.8rem;
+        border: none;
+        cursor: pointer;
+        background: var(--accent);
+        color: #121212;
+        transition: background 0.2s;
+    }
+    .bj-btn:hover { background: var(--accent-hover); }
+    .bj-btn:disabled { background: var(--btn-disabled-bg); color: var(--btn-disabled-text); cursor: not-allowed; }
+    .bj-input {
+        width: 100%;
+        background: rgba(255,255,255,0.07);
+        border: 1px solid var(--panel-border);
+        border-radius: 6px;
+        padding: 6px 10px;
+        color: #fff;
+        font-size: 0.85rem;
+        margin-bottom: 8px;
+        outline: none;
+    }
+
     /* ================= GATE (1. Discord Login, 2. 18+) ================= */
     .gate-overlay {
         position: fixed;
@@ -1011,6 +1089,34 @@
     </div>
 </div>
 
+<!-- ================= BLACKJACK WIDGET ================= -->
+<div id="blackjackWidget" class="blackjack-widget hidden">
+    <div class="bj-header">
+        <span>🃏 Daily Blackjack</span>
+        <button class="logout-btn" onclick="toggleBlackjack()">X</button>
+    </div>
+    <div class="bj-stats">
+        <span>Pontok: <strong id="bjPoints">0</strong></span>
+        <span>Min. tét: <strong>1 point</strong>[cite: 1]</span>
+    </div>
+    <div id="bjSetupView">
+        <input type="number" id="bjBetInput" class="bj-input" min="1" value="1" placeholder="Tét (pont)">
+        <button class="bj-btn" style="width: 100%;" onclick="startBlackjackGame()">Játék Indítása</button>
+    </div>
+    <div id="bjGameView" class="hidden">
+        <div class="bj-table-area">
+            <div>Osztó lapjai: <span id="bjDealerCards">-</span> (<span id="bjDealerScore">0</span>)</div>
+            <div>Te lapjaid: <span id="bjPlayerCards">-</span> (<span id="bjPlayerScore">0</span>)</div>
+            <div id="bjMessage" style="font-weight: 600; color: var(--accent); text-align: center; margin-top: 4px;"></div>
+        </div>
+        <div class="bj-controls" id="bjPlayControls">
+            <button class="bj-btn" onclick="bjHit()">Lapot (Hit)</button>
+            <button class="bj-btn" onclick="bjStand()">Áll (Stand)</button>
+        </div>
+        <button id="bjRestartBtn" class="bj-btn hidden" style="width: 100%; margin-top: 4px;" onclick="bjResetTable()">Új kör</button>
+    </div>
+</div>
+
 <!-- ================= GREETING TOAST ================= -->
 <div id="greetingToast" class="greeting-toast"></div>
 
@@ -1179,6 +1285,11 @@
                             <img src="gmail-logo.png" alt="" class="link-icon" width="40" height="40" loading="lazy"> Business email
                         </a>
                     </li>
+                    <li>
+                        <button onclick="toggleBlackjack()" class="link-btn" style="background: rgba(30, 215, 96, 0.15); border-color: var(--accent);">
+                            🃏 Open Blackjack
+                        </button>
+                    </li>
                 </ul>
             </nav>
 
@@ -1328,9 +1439,6 @@
     const DISCORD_GUILD_ID = '1529406935517106276';
     const REDIRECT_URI = 'https://morehyside.github.io/SRCCXD/';
 
-    // Ordered from highest to lowest rank — first match found in the member's
-    // role list wins, so order here determines precedence, not the order
-    // Discord returns roles in.
     const ROLE_MAP_ORDERED = [
         ['1529407455442899044', '.!'],
         ['1529450339034595328', 'Server manager'],
@@ -1371,9 +1479,6 @@
         statsCard.classList.toggle('hidden');
     }
 
-    // Discord's default-avatar index for users migrated to the new username
-    // system: (snowflake >> 22) % 6. Must operate on a BigInt, since user.id
-    // arrives from the API as a numeric string.
     function defaultAvatarIndex(discordId) {
         return Number(BigInt(discordId) >> 22n) % 6;
     }
@@ -1386,7 +1491,6 @@
             if (!userRes.ok) throw new Error('Discord API error');
             const user = await userRes.json();
 
-            // Apply dynamic Discord profile color
             if (user.accent_color) {
                 const hexColor = '#' + user.accent_color.toString(16).padStart(6, '0');
                 document.documentElement.style.setProperty('--accent', hexColor);
@@ -1550,6 +1654,156 @@
         rafId = requestAnimationFrame(frame);
     }
 
+    // ================= BLACKJACK LOGIC =================
+    let userPoints = parseInt(localStorage.getItem('srccxd_user_points') || '100');
+    let currentBet = 1;
+    let deck = [];
+    let playerHand = [];
+    let dealerHand = [];
+    let gameInProgress = false;
+
+    function updatePointsDisplay() {
+        localStorage.setItem('srccxd_user_points', userPoints);
+        const ptsEl = document.getElementById('bjPoints');
+        if (ptsEl) ptsEl.textContent = userPoints;
+    }
+
+    function toggleBlackjack() {
+        const bjWidget = document.getElementById('blackjackWidget');
+        bjWidget.classList.toggle('hidden');
+        updatePointsDisplay();
+    }
+
+    function createDeck() {
+        const suits = ['♠', '♥', '♦', '♣'];
+        const values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+        let newDeck = [];
+        for (let suit of suits) {
+            for (let val of values) {
+                newDeck.push({ suit, val });
+            }
+        }
+        for (let i = newDeck.length - 1; i > 0; i--) {
+            let j = Math.floor(Math.random() * (i + 1));
+            [newDeck[i], newDeck[j]] = [newDeck[j], newDeck[i]];
+        }
+        return newDeck;
+    }
+
+    function getCardValue(card) {
+        if (['J', 'Q', 'K'].includes(card.val)) return 10;
+        if (card.val === 'A') return 11;
+        return parseInt(card.val);
+    }
+
+    function calculateHandScore(hand) {
+        let score = 0;
+        let aces = 0;
+        for (let card of hand) {
+            score += getCardValue(card);
+            if (card.val === 'A') aces++;
+        }
+        while (score > 21 && aces > 0) {
+            score -= 10;
+            aces--;
+        }
+        return score;
+    }
+
+    function startBlackjackGame() {
+        const betInput = document.getElementById('bjBetInput');
+        let bet = parseInt(betInput.value);
+
+        if (isNaN(bet) || bet < 1) {
+            alert('A minimális tét 1 pont[cite: 1]!');
+            return;
+        }
+        if (bet > userPoints) {
+            alert('Nincs elegendő pontod ehhez a téthez!');
+            return;
+        }
+
+        currentBet = bet;
+        userPoints -= currentBet;
+        updatePointsDisplay();
+
+        deck = createDeck();
+        playerHand = [deck.pop(), deck.pop()];
+        dealerHand = [deck.pop(), deck.pop()];
+        gameInProgress = true;
+
+        document.getElementById('bjSetupView').classList.add('hidden');
+        document.getElementById('bjGameView').classList.remove('hidden');
+        document.getElementById('bjPlayControls').classList.remove('hidden');
+        document.getElementById('bjRestartBtn').classList.add('hidden');
+        document.getElementById('bjMessage').textContent = '';
+
+        renderGameTable(false);
+
+        if (calculateHandScore(playerHand) === 21) {
+            endBlackjack('Játékos Blackjack! Nyertél!');
+        }
+    }
+
+    function renderGameTable(revealDealer) {
+        document.getElementById('bjPlayerCards').textContent = playerHand.map(c => c.val + c.suit).join(' ');
+        document.getElementById('bjPlayerScore').textContent = calculateHandScore(playerHand);
+
+        if (revealDealer) {
+            document.getElementById('bjDealerCards').textContent = dealerHand.map(c => c.val + c.suit).join(' ');
+            document.getElementById('bjDealerScore').textContent = calculateHandScore(dealerHand);
+        } else {
+            document.getElementById('bjDealerCards').textContent = dealerHand[0].val + dealerHand[0].suit + ' ?';
+            document.getElementById('bjDealerScore').textContent = getCardValue(dealerHand[0]);
+        }
+    }
+
+    function bjHit() {
+        if (!gameInProgress) return;
+        playerHand.push(deck.pop());
+        renderGameTable(false);
+
+        if (calculateHandScore(playerHand) > 21) {
+            endBlackjack('Túllépted a 21-et! Vesztettél.');
+        }
+    }
+
+    function bjStand() {
+        if (!gameInProgress) return;
+        
+        while (calculateHandScore(dealerHand) < 17) {
+            dealerHand.push(deck.pop());
+        }
+
+        renderGameTable(true);
+
+        let pScore = calculateHandScore(playerHand);
+        let dScore = calculateHandScore(dealerHand);
+
+        if (dScore > 21 || pScore > dScore) {
+            userPoints += currentBet * 2;
+            endBlackjack('Gratulálok, nyertél!');
+        } else if (pScore === dScore) {
+            userPoints += currentBet;
+            endBlackjack('Döntetlen (Push)! Visszakaptad a tétet.');
+        } else {
+            endBlackjack('Az osztó nyert!');
+        }
+    }
+
+    function endBlackjack(msg) {
+        gameInProgress = false;
+        document.getElementById('bjMessage').textContent = msg;
+        document.getElementById('bjPlayControls').classList.add('hidden');
+        document.getElementById('bjRestartBtn').classList.remove('hidden');
+        updatePointsDisplay();
+    }
+
+    function bjResetTable() {
+        document.getElementById('bjGameView').classList.add('hidden');
+        document.getElementById('bjSetupView').classList.remove('hidden');
+    }
+
     window.addEventListener('load', async function () {
         setTimeout(function () {
             var introLoader = document.getElementById('introLoader');
@@ -1594,6 +1848,7 @@
             stepDiscord.classList.remove('hidden');
             stepAge.classList.add('hidden');
         }
+        updatePointsDisplay();
     });
 
     document.addEventListener('DOMContentLoaded', function () {
@@ -1815,7 +2070,7 @@
             mainCard.classList.add('reveal');
             casinoSection.classList.add('reveal');
             var bgVideo = document.querySelector('.bg-video');
-            if (bgVideo) { bgVideo.play().catch(function () {}); }
+            if (bgVideo) { bgVideo.play().call(function () {}); }
 
             playSafely();
             fireConfetti();
@@ -1842,3 +2097,4 @@
 
 </body>
 </html>
+```[cite: 1]
