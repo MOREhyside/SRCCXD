@@ -594,34 +594,83 @@
 
     /* Slick 3D Playing Card Animation */
     .bj-card-item {
-        background: #ffffff;
-        color: #121212;
-        font-family: 'Space Grotesk', sans-serif;
-        font-weight: 700;
-        font-size: 0.95rem;
         width: 44px;
         height: 64px;
         border-radius: 6px;
+        position: relative;
+        perspective: 700px;
+        user-select: none;
+        transform-origin: top center;
+        animation: dealCard 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+    }
+
+    .bj-card-inner {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        transform-style: preserve-3d;
+        transition: transform 0.55s cubic-bezier(0.45, 0.05, 0.15, 1);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+        border-radius: 6px;
+    }
+
+    /* face-down cards (dealer's hole card) start flipped to show the back */
+    .bj-card-item.is-back .bj-card-inner {
+        transform: rotateY(180deg);
+    }
+
+    .bj-card-face {
+        position: absolute;
+        inset: 0;
+        border-radius: 6px;
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: space-between;
         padding: 6px 4px;
-        box-shadow: 0 8px 20px rgba(0,0,0,0.4);
-        transform-origin: top center;
-        animation: dealCard 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-        position: relative;
-        user-select: none;
+        font-family: 'Space Grotesk', sans-serif;
+        font-weight: 700;
+        font-size: 0.95rem;
     }
 
-    .bj-card-item.red {
+    .bj-card-front {
+        background: #ffffff;
+        color: #121212;
+    }
+
+    .bj-card-front.red {
         color: #e1306c;
     }
 
-    .bj-card-item.hidden-card {
+    .bj-card-back {
         background: linear-gradient(135deg, #454e63, #2b3240);
-        color: transparent;
         border: 2px dashed rgba(255,255,255,0.3);
+        transform: rotateY(180deg);
+        align-items: center;
+        justify-content: center;
+    }
+
+    .bj-card-back-pattern {
+        font-size: 1.3rem;
+        line-height: 1;
+        color: color-mix(in srgb, var(--accent) 65%, transparent);
+        filter: drop-shadow(0 0 4px color-mix(in srgb, var(--accent) 40%, transparent));
+    }
+
+    .bj-card-corner {
+        font-size: 0.75rem;
+        line-height: 1;
+    }
+
+    .bj-card-corner-bottom {
+        transform: rotate(180deg);
+    }
+
+    @media (max-width: 768px), (prefers-reduced-motion: reduce) {
+        .bj-card-item { animation: none; opacity: 1; }
+        .bj-card-inner { transition: none; }
     }
 
     @keyframes dealCard {
@@ -1573,6 +1622,16 @@
         ['1529407704140087326', 'tag']
     ];
 
+    // Discord's OAuth "identify" scope doesn't expose role colors (that needs a bot token),
+    // so map each role id to its actual color from the server's Role Settings (right-click
+    // role -> Edit Role -> the hex code under "Role Color"). Edit these to match your server.
+    const ROLE_COLOR_MAP = {
+        '1529407455442899044': '#f1c40f', // .!
+        '1529450339034595328': '#e74c3c', // Server manager
+        '1529532500643152067': '#3498db', // Helper
+        '1529407704140087326': '#1ed760'  // tag
+    };
+
     function clearAuthStorage() {
         localStorage.removeItem('discord_token');
         localStorage.removeItem('discord_username');
@@ -1618,13 +1677,6 @@
             if (!userRes.ok) throw new Error('Discord API error');
             const user = await userRes.json();
 
-            if (user.accent_color) {
-                const hexColor = '#' + user.accent_color.toString(16).padStart(6, '0');
-                document.documentElement.style.setProperty('--accent', hexColor);
-                document.documentElement.style.setProperty('--accent-hover', hexColor);
-                localStorage.setItem('discord_accent_color', hexColor);
-            }
-
             const username = user.global_name || user.username;
             const avatarUrl = user.avatar
                 ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`
@@ -1643,6 +1695,7 @@
 
             let isMember = false;
             let highestRole = 'No rank';
+            let highestRoleColor = null;
 
             try {
                 const memberRes = await fetch(`https://discord.com/api/users/@me/guilds/${DISCORD_GUILD_ID}/member`, {
@@ -1657,6 +1710,7 @@
                         for (const [roleId, roleLabel] of ROLE_MAP_ORDERED) {
                             if (memberData.roles.includes(roleId)) {
                                 highestRole = roleLabel;
+                                highestRoleColor = ROLE_COLOR_MAP[roleId] || null;
                                 break;
                             }
                         }
@@ -1664,6 +1718,19 @@
                 }
             } catch (e) {
                 console.error('Server membership/role lookup error:', e);
+            }
+
+            // Prefer the color of the user's server rank; fall back to their personal
+            // Discord profile accent color, and finally to the site default (set in :root).
+            const profileAccentColor = user.accent_color
+                ? '#' + user.accent_color.toString(16).padStart(6, '0')
+                : null;
+            const resolvedAccentColor = highestRoleColor || profileAccentColor;
+
+            if (resolvedAccentColor) {
+                document.documentElement.style.setProperty('--accent', resolvedAccentColor);
+                document.documentElement.style.setProperty('--accent-hover', resolvedAccentColor);
+                localStorage.setItem('discord_accent_color', resolvedAccentColor);
             }
 
             localStorage.setItem('discord_is_member', isMember ? 'true' : 'false');
@@ -1778,26 +1845,52 @@
         return sum;
     }
 
+    function buildCardElement(card, faceDown, delayIndex) {
+        const cardEl = document.createElement('div');
+        cardEl.className = 'bj-card-item' + (faceDown ? ' is-back' : '');
+        cardEl.style.animationDelay = (delayIndex * 0.14) + 's';
+
+        const isRed = ['♥', '♦'].includes(card.suit);
+        cardEl.innerHTML = `
+            <div class="bj-card-inner">
+                <div class="bj-card-face bj-card-front${isRed ? ' red' : ''}">
+                    <span class="bj-card-corner">${card.value}</span>
+                    <span style="font-size:1.2rem; line-height:1;">${card.suit}</span>
+                    <span class="bj-card-corner bj-card-corner-bottom">${card.value}</span>
+                </div>
+                <div class="bj-card-face bj-card-back">
+                    <span class="bj-card-back-pattern">✦</span>
+                </div>
+            </div>
+        `;
+        return cardEl;
+    }
+
+    // Full (re)deal of a hand — used at the start of a round
     function renderCards(hand, elementId, hideFirst = false) {
         const container = document.getElementById(elementId);
         container.innerHTML = '';
         hand.forEach((card, index) => {
-            const cardEl = document.createElement('div');
-            cardEl.className = 'bj-card-item';
-            
-            if (hideFirst && index === 0) {
-                cardEl.classList.add('hidden-card');
-                cardEl.innerHTML = `<span style="font-size:1.2rem;">🂠</span>`;
-            } else {
-                if (['♥', '♦'].includes(card.suit)) cardEl.classList.add('red');
-                cardEl.innerHTML = `
-                    <span style="font-size:0.75rem; line-height:1;">${card.value}</span>
-                    <span style="font-size:1.2rem; line-height:1;">${card.suit}</span>
-                    <span style="font-size:0.75rem; line-height:1; transform: rotate(180deg);">${card.value}</span>
-                `;
-            }
-            container.appendChild(cardEl);
+            const faceDown = hideFirst && index === 0;
+            container.appendChild(buildCardElement(card, faceDown, index));
         });
+    }
+
+    // Appends only the newest card (hit / dealer draw) without replaying earlier cards' animations
+    function dealNewCard(hand, elementId) {
+        const container = document.getElementById(elementId);
+        const card = hand[hand.length - 1];
+        container.appendChild(buildCardElement(card, false, 0));
+    }
+
+    // Flips the dealer's face-down hole card over to reveal it, instead of re-rendering the row
+    function revealHoleCard(elementId) {
+        const container = document.getElementById(elementId);
+        const holeCardEl = container.querySelector('.bj-card-item.is-back');
+        if (holeCardEl) {
+            // next frame so the transition actually plays
+            requestAnimationFrame(() => holeCardEl.classList.remove('is-back'));
+        }
     }
 
     function startBlackjackGame() {
@@ -1840,7 +1933,7 @@
     function bjHit() {
         if (!gameActive) return;
         playerHand.push(deck.pop());
-        renderCards(playerHand, 'playerCards');
+        dealNewCard(playerHand, 'playerCards');
         let pScore = calculateHand(playerHand);
         document.getElementById('playerScore').textContent = pScore;
 
@@ -1853,23 +1946,24 @@
 
     function bjStand() {
         if (!gameActive) return;
-        
-        renderCards(dealerHand, 'dealerCards', false);
+
+        revealHoleCard('dealerCards');
         let dScore = calculateHand(dealerHand);
         document.getElementById('dealerScore').textContent = dScore;
 
+        // give the flip animation a moment to play before the dealer starts drawing
         let interval = setInterval(() => {
             dScore = calculateHand(dealerHand);
             if (dScore < 17) {
                 dealerHand.push(deck.pop());
-                renderCards(dealerHand, 'dealerCards', false);
+                dealNewCard(dealerHand, 'dealerCards');
                 dScore = calculateHand(dealerHand);
                 document.getElementById('dealerScore').textContent = dScore;
             } else {
                 clearInterval(interval);
                 evaluateGameResult();
             }
-        }, 500);
+        }, 600);
     }
 
     function evaluateGameResult() {
@@ -1889,7 +1983,7 @@
 
     function endBlackjack(result) {
         gameActive = false;
-        renderCards(dealerHand, 'dealerCards', false);
+        revealHoleCard('dealerCards');
         document.getElementById('dealerScore').textContent = calculateHand(dealerHand);
 
         let statusMsg = '';
