@@ -1450,6 +1450,7 @@
             localStorage.setItem('discord_avatar', avatarUrl);
             localStorage.setItem('discord_reg_date', regDateFormatted);
             localStorage.setItem('discord_points', String(pointsResult.points));
+            localStorage.setItem('discord_user_id', user.id);
 
             let isMember = false;
             let highestRole = 'No rank';
@@ -1485,6 +1486,7 @@
             } else {
                 showGreetingToast(`👋 Welcome, ${username}!`);
             }
+            initBlackjackWidget(user.id, pointsResult.points);
             return true;
         } catch (err) {
             console.error('Data fetch error:', err);
