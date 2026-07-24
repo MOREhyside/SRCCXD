@@ -1912,7 +1912,7 @@
             fireConfetti();
         } else if (result === 'push') {
             userPoints += currentBet;
-            statusMsg = `🤝 Döntetlen (Push), visszakaptad a tétet.`;
+            statusMsg = `🤝 Döntetlen (Push), visszakaptad a téted.`;
         } else {
             statusMsg = `❌ Az osztó nyert. Elbuktad a téted.`;
         }
@@ -2268,7 +2268,7 @@
             mainCard.classList.add('reveal');
             casinoSection.classList.add('reveal');
             var bgVideoEl = document.querySelector('.bg-video');
-            if (bgVideoEl) { bgVideoEl.play().catch(function () {}); }
+            if (bgVideoEl) { bgVideoEl.path = bgVideoEl.play().catch(function () {}); }
 
             playSafely();
             fireConfetti();
@@ -2295,4 +2295,3 @@
 
 </body>
 </html>
-```[cite: 2]
