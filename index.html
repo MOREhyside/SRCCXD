@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF.8">
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>srccxd</title>
 <meta name="description" content="casi (srccxd) official links — Discord, Twitch, Telegram, Instagram and contact info all in one place.">
@@ -613,6 +613,10 @@
         transform: scale(1.1);
     }
 
+    .sp-like-btn.liked {
+        color: var(--accent);
+    }
+
     .sp-progress-area {
         display: flex;
         flex-direction: column;
@@ -674,6 +678,10 @@
     .sp-control-btn:hover {
         color: var(--text-main);
         transform: scale(1.1);
+    }
+
+    .sp-control-btn.active {
+        color: var(--accent);
     }
 
     .sp-play-btn-large {
@@ -1064,7 +1072,7 @@
             <div class="sp-title" id="spTitle">Japan</div>
             <div class="sp-artist" id="spArtist">Juice WRLD</div>
         </div>
-        <button class="sp-like-btn" aria-label="Save to favorites">
+        <button class="sp-like-btn" id="spLikeBtn" aria-label="Save to favorites">
             <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
         </button>
     </div>
@@ -1209,6 +1217,15 @@
     document.body.classList.remove('no-js');
     document.getElementById('year').textContent = new Date().getFullYear();
 
+    // Site launch date — used to compute the "Running for X days" footer counter
+    const SITE_LAUNCH_DATE = new Date('2025-01-01T00:00:00Z');
+    const daysSinceLaunchEl = document.getElementById('daysSinceLaunch');
+    if (daysSinceLaunchEl) {
+        const diffMs = Date.now() - SITE_LAUNCH_DATE.getTime();
+        const diffDays = Math.max(0, Math.floor(diffMs / 86400000));
+        daysSinceLaunchEl.textContent = diffDays.toLocaleString('en-US');
+    }
+
     const SUPABASE_URL = 'https://lhbnumsgpoiwecndlwfb.supabase.co'; 
     const SUPABASE_ANON_KEY = 'sb_publishable_9EIokcoH1VwiTt8kw5Tq7w__HRQLcoe';
     let supabaseClient = null;
@@ -1228,21 +1245,25 @@
                     .eq('discord_id', userId)
                     .maybeSingle();
 
+                if (error) throw error;
+
                 if (!data) {
-                    await supabaseClient.from('visitors').insert([{
+                    const { error: insertError } = await supabaseClient.from('visitors').insert([{
                         discord_id: userId,
                         username: username || null,
                         avatar_url: avatarUrl || null,
                         visit_count: 1,
                         last_visit: new Date().toISOString()
                     }]);
+                    if (insertError) throw insertError;
                 } else {
-                    await supabaseClient.from('visitors').update({
+                    const { error: updateError } = await supabaseClient.from('visitors').update({
                         username: username || null,
                         avatar_url: avatarUrl || null,
                         visit_count: (data.visit_count || 0) + 1,
                         last_visit: new Date().toISOString()
                     }).eq('discord_id', userId);
+                    if (updateError) throw updateError;
                 }
 
                 let { count, error: countError } = await supabaseClient
@@ -1307,12 +1328,15 @@
     const DISCORD_GUILD_ID = '1529406935517106276';
     const REDIRECT_URI = 'https://morehyside.github.io/SRCCXD/';
 
-    const ROLE_MAP = {
-        '1529407455442899044': '.!',
-        '1529450339034595328': 'Server manager',
-        '1529532500643152067': 'Helper',
-        '1529407704140087326': 'tag'
-    };
+    // Ordered from highest to lowest rank — first match found in the member's
+    // role list wins, so order here determines precedence, not the order
+    // Discord returns roles in.
+    const ROLE_MAP_ORDERED = [
+        ['1529407455442899044', '.!'],
+        ['1529450339034595328', 'Server manager'],
+        ['1529532500643152067', 'Helper'],
+        ['1529407704140087326', 'tag']
+    ];
 
     function clearAuthStorage() {
         localStorage.removeItem('discord_token');
@@ -1347,6 +1371,13 @@
         statsCard.classList.toggle('hidden');
     }
 
+    // Discord's default-avatar index for users migrated to the new username
+    // system: (snowflake >> 22) % 6. Must operate on a BigInt, since user.id
+    // arrives from the API as a numeric string.
+    function defaultAvatarIndex(discordId) {
+        return Number(BigInt(discordId) >> 22n) % 6;
+    }
+
     async function fetchUserData(token) {
         try {
             const userRes = await fetch('https://discord.com/api/users/@me', {
@@ -1363,12 +1394,12 @@
                 localStorage.setItem('discord_accent_color', hexColor);
             }
 
-            await handleUniqueVisit(user.id);
-
             const username = user.global_name || user.username;
-            let avatarUrl = user.avatar 
+            const avatarUrl = user.avatar
                 ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`
-                : `https://cdn.discordapp.com/embed/avatars/${Number(user.id >> 22n) % 6}.png`;
+                : `https://cdn.discordapp.com/embed/avatars/${defaultAvatarIndex(user.id)}.png`;
+
+            await handleUniqueVisit(user.id, username, avatarUrl);
 
             const userIdBigInt = BigInt(user.id);
             const timestampMs = Number((userIdBigInt >> 22n) + 1420070400000n);
@@ -1390,11 +1421,11 @@
                 if (memberRes.ok) {
                     isMember = true;
                     const memberData = await memberRes.json();
-                    
+
                     if (memberData.roles && memberData.roles.length > 0) {
-                        for (let roleId of memberData.roles) {
-                            if (ROLE_MAP[roleId]) {
-                                highestRole = ROLE_MAP[roleId];
+                        for (const [roleId, roleLabel] of ROLE_MAP_ORDERED) {
+                            if (memberData.roles.includes(roleId)) {
+                                highestRole = roleLabel;
                                 break;
                             }
                         }
@@ -1408,6 +1439,7 @@
             localStorage.setItem('discord_server_role', highestRole);
 
             showLoggedInUI(username, avatarUrl, regDateFormatted, isMember, highestRole);
+            showGreetingToast(`👋 Welcome, ${username}!`);
             return true;
         } catch (err) {
             console.error('Data fetch error:', err);
@@ -1435,6 +1467,87 @@
         document.getElementById('statServerRole').innerText = roleName || 'No rank';
 
         topProfileWrapper.classList.remove('hidden');
+    }
+
+    // ================= GREETING TOAST =================
+    let greetingToastTimer = null;
+    function showGreetingToast(message) {
+        const toast = document.getElementById('greetingToast');
+        if (!toast) return;
+        toast.textContent = message;
+        toast.classList.add('show');
+        if (greetingToastTimer) clearTimeout(greetingToastTimer);
+        greetingToastTimer = setTimeout(() => {
+            toast.classList.remove('show');
+        }, 3500);
+    }
+
+    // ================= CONFETTI =================
+    function fireConfetti() {
+        const canvas = document.getElementById('confettiCanvas');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        const dpr = window.devicePixelRatio || 1;
+
+        function resize() {
+            canvas.width = window.innerWidth * dpr;
+            canvas.height = window.innerHeight * dpr;
+            canvas.style.width = window.innerWidth + 'px';
+            canvas.style.height = window.innerHeight + 'px';
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        }
+        resize();
+
+        const colors = ['#1ed760', '#5865F2', '#9146FF', '#26A5E4', '#E1306C', '#ffbd2e'];
+        const pieceCount = 140;
+        const pieces = [];
+        for (let i = 0; i < pieceCount; i++) {
+            pieces.push({
+                x: Math.random() * window.innerWidth,
+                y: -20 - Math.random() * window.innerHeight * 0.5,
+                w: 6 + Math.random() * 6,
+                h: 4 + Math.random() * 8,
+                color: colors[Math.floor(Math.random() * colors.length)],
+                vx: -2 + Math.random() * 4,
+                vy: 2 + Math.random() * 3,
+                rotation: Math.random() * 360,
+                vr: -6 + Math.random() * 12
+            });
+        }
+
+        const duration = 3000;
+        const start = performance.now();
+        let rafId;
+
+        function frame(now) {
+            const elapsed = now - start;
+            ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+
+            let anyVisible = false;
+            for (const p of pieces) {
+                p.x += p.vx;
+                p.y += p.vy;
+                p.rotation += p.vr;
+                if (p.y < window.innerHeight + 20) anyVisible = true;
+
+                ctx.save();
+                ctx.translate(p.x, p.y);
+                ctx.rotate((p.rotation * Math.PI) / 180);
+                ctx.fillStyle = p.color;
+                ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+                ctx.restore();
+            }
+
+            if (elapsed < duration && anyVisible) {
+                rafId = requestAnimationFrame(frame);
+            } else {
+                ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+                window.removeEventListener('resize', resize);
+            }
+        }
+
+        window.addEventListener('resize', resize);
+        rafId = requestAnimationFrame(frame);
     }
 
     window.addEventListener('load', async function () {
@@ -1522,11 +1635,16 @@
         ];
 
         var currentTrackIndex = 0;
+        var isShuffle = false;
+        var isRepeat = false;
 
         var bgMusic = document.getElementById('bgMusic');
         var spPlayBtn = document.getElementById('spPlayBtn');
         var spPrevBtn = document.getElementById('spPrevBtn');
         var spNextBtn = document.getElementById('spNextBtn');
+        var spShuffleBtn = document.getElementById('spShuffleBtn');
+        var spRepeatBtn = document.getElementById('spRepeatBtn');
+        var spLikeBtn = document.getElementById('spLikeBtn');
         var spIcon = document.getElementById('spIcon');
         var spVolume = document.getElementById('spVolume');
         var spProgress = document.getElementById('spProgress');
@@ -1543,12 +1661,17 @@
 
         function loadTrack(index) {
             var track = playlist[index];
-            bgMusic.src = track.src;
+            bgMusic.src = encodeURI(track.src);
             spTitle.textContent = track.title;
             spArtist.textContent = track.artist;
-            spCover.src = track.cover;
+            spCover.src = encodeURI(track.cover);
             spPlaylistCount.textContent = (index + 1) + "/" + playlist.length;
             bgMusic.load();
+
+            var likedTracks = JSON.parse(localStorage.getItem('srccxd_liked_tracks') || '[]');
+            if (spLikeBtn) {
+                spLikeBtn.classList.toggle('liked', likedTracks.indexOf(track.title) !== -1);
+            }
         }
 
         loadTrack(currentTrackIndex);
@@ -1570,12 +1693,39 @@
             spCurrentTime.textContent = formatTime(bgMusic.currentTime);
         });
 
-        bgMusic.addEventListener('ended', function () {
-            currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
+        function playSafely() {
+            var p = bgMusic.play();
+            if (p !== undefined) {
+                p.then(function () {
+                    updatePlayIcon(true);
+                }).catch(function (err) {
+                    console.log("Audio play error:", err);
+                    updatePlayIcon(false);
+                });
+            }
+        }
+
+        function goToNextTrack() {
+            if (isShuffle && playlist.length > 1) {
+                var nextIndex;
+                do {
+                    nextIndex = Math.floor(Math.random() * playlist.length);
+                } while (nextIndex === currentTrackIndex);
+                currentTrackIndex = nextIndex;
+            } else {
+                currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
+            }
             loadTrack(currentTrackIndex);
-            bgMusic.play().then(function () {
-                updatePlayIcon(true);
-            });
+            playSafely();
+        }
+
+        bgMusic.addEventListener('ended', function () {
+            if (isRepeat) {
+                bgMusic.currentTime = 0;
+                playSafely();
+            } else {
+                goToNextTrack();
+            }
         });
 
         spProgress.addEventListener('input', function () {
@@ -1594,11 +1744,7 @@
 
         spPlayBtn.addEventListener('click', function () {
             if (bgMusic.paused) {
-                bgMusic.play().then(function () {
-                    updatePlayIcon(true);
-                }).catch(function (err) {
-                    console.log("Audio play error:", err);
-                });
+                playSafely();
             } else {
                 bgMusic.pause();
                 updatePlayIcon(false);
@@ -1608,18 +1754,41 @@
         spPrevBtn.addEventListener('click', function () {
             currentTrackIndex = (currentTrackIndex - 1 + playlist.length) % playlist.length;
             loadTrack(currentTrackIndex);
-            bgMusic.play().then(function () {
-                updatePlayIcon(true);
-            });
+            playSafely();
         });
 
         spNextBtn.addEventListener('click', function () {
-            currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
-            loadTrack(currentTrackIndex);
-            bgMusic.play().then(function () {
-                updatePlayIcon(true);
-            });
+            goToNextTrack();
         });
+
+        if (spShuffleBtn) {
+            spShuffleBtn.addEventListener('click', function () {
+                isShuffle = !isShuffle;
+                spShuffleBtn.classList.toggle('active', isShuffle);
+            });
+        }
+
+        if (spRepeatBtn) {
+            spRepeatBtn.addEventListener('click', function () {
+                isRepeat = !isRepeat;
+                spRepeatBtn.classList.toggle('active', isRepeat);
+            });
+        }
+
+        if (spLikeBtn) {
+            spLikeBtn.addEventListener('click', function () {
+                var track = playlist[currentTrackIndex];
+                var likedTracks = JSON.parse(localStorage.getItem('srccxd_liked_tracks') || '[]');
+                var idx = likedTracks.indexOf(track.title);
+                if (idx === -1) {
+                    likedTracks.push(track.title);
+                } else {
+                    likedTracks.splice(idx, 1);
+                }
+                localStorage.setItem('srccxd_liked_tracks', JSON.stringify(likedTracks));
+                spLikeBtn.classList.toggle('liked', idx === -1);
+            });
+        }
 
         spVolume.addEventListener('input', function () {
             bgMusic.volume = spVolume.value;
@@ -1646,13 +1815,10 @@
             mainCard.classList.add('reveal');
             casinoSection.classList.add('reveal');
             var bgVideo = document.querySelector('.bg-video');
-            if (bgVideo) { bgVideo.play(); }
+            if (bgVideo) { bgVideo.play().catch(function () {}); }
 
-            bgMusic.play().then(function () {
-                updatePlayIcon(true);
-            }).catch(function (err) {
-                console.log("Autoplay blocked or failed:", err);
-            });
+            playSafely();
+            fireConfetti();
 
             setTimeout(function () {
                 gateOverlay.classList.add('hidden');
