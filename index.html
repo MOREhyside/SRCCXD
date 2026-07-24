@@ -869,6 +869,119 @@
     .visitor-counter strong {
         color: var(--accent);
     }
+
+    /* ================= LEADERBOARD WIDGET ================= */
+    .leaderboard-widget {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        z-index: 105;
+        width: 240px;
+        background: rgba(18, 18, 18, 0.92);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid var(--panel-border);
+        border-radius: 14px;
+        padding: 14px 16px;
+        font-size: 0.82rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .leaderboard-widget.hidden { display: none !important; }
+
+    .leaderboard-header {
+        font-family: 'Space Grotesk', sans-serif;
+        font-weight: 700;
+        font-size: 0.9rem;
+        color: var(--accent);
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .leaderboard-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .leaderboard-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .leaderboard-rank {
+        width: 16px;
+        color: var(--text-dim);
+        font-weight: 600;
+        flex-shrink: 0;
+    }
+
+    .leaderboard-avatar {
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        object-fit: cover;
+        flex-shrink: 0;
+    }
+
+    .leaderboard-name {
+        flex: 1;
+        color: var(--text-main);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .leaderboard-count {
+        color: var(--accent);
+        font-weight: 600;
+        flex-shrink: 0;
+    }
+
+    .leaderboard-empty {
+        color: var(--text-dim);
+        font-style: italic;
+    }
+
+    @media (max-width: 768px) {
+        .leaderboard-widget { display: none; }
+    }
+
+    /* ================= GREETING TOAST ================= */
+    .greeting-toast {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translate(-50%, -20px);
+        z-index: 150;
+        background: rgba(18, 18, 18, 0.95);
+        border: 1px solid var(--accent);
+        border-radius: 12px;
+        padding: 12px 20px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #fff;
+        box-shadow: 0 10px 30px color-mix(in srgb, var(--accent) 30%, transparent);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+
+    .greeting-toast.show {
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
+
+    /* ================= CONFETTI CANVAS ================= */
+    #confettiCanvas {
+        position: fixed;
+        inset: 0;
+        z-index: 160;
+        pointer-events: none;
+    }
 </style>
 </head>
 <body class="no-js">
@@ -881,6 +994,20 @@
         document.documentElement.style.setProperty('--accent-hover', savedAccent);
     }
 </script>
+
+<!-- ================= LEADERBOARD WIDGET ================= -->
+<div id="leaderboardWidget" class="leaderboard-widget hidden">
+    <div class="leaderboard-header">🏆 Top Visitors</div>
+    <div class="leaderboard-list" id="leaderboardList">
+        <span class="leaderboard-empty">Loading...</span>
+    </div>
+</div>
+
+<!-- ================= GREETING TOAST ================= -->
+<div id="greetingToast" class="greeting-toast"></div>
+
+<!-- ================= CONFETTI CANVAS ================= -->
+<canvas id="confettiCanvas"></canvas>
 
 <!-- ================= TOP RIGHT DISCORD PROFILE & STATS WIDGET ================= -->
 <div id="topProfileWrapper" class="top-right-wrapper hidden">
@@ -1075,6 +1202,7 @@
 
 <footer>
     <span>&copy; <span id="year"></span> casi</span>
+    <span> · Running for <strong id="daysSinceLaunch">-</strong> days</span>
 </footer>
 
 <script>
@@ -1089,19 +1217,32 @@
         supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     }
 
-    async function handleUniqueVisit(userId) {
+    async function handleUniqueVisit(userId, username, avatarUrl) {
         let currentVisits = parseInt(localStorage.getItem('srccxd_unique_visits') || '1420');
         
         if (supabaseClient) {
             try {
                 let { data, error } = await supabaseClient
                     .from('visitors')
-                    .select('discord_id')
+                    .select('discord_id, visit_count')
                     .eq('discord_id', userId)
                     .maybeSingle();
 
                 if (!data) {
-                    await supabaseClient.from('visitors').insert([{ discord_id: userId }]);
+                    await supabaseClient.from('visitors').insert([{
+                        discord_id: userId,
+                        username: username || null,
+                        avatar_url: avatarUrl || null,
+                        visit_count: 1,
+                        last_visit: new Date().toISOString()
+                    }]);
+                } else {
+                    await supabaseClient.from('visitors').update({
+                        username: username || null,
+                        avatar_url: avatarUrl || null,
+                        visit_count: (data.visit_count || 0) + 1,
+                        last_visit: new Date().toISOString()
+                    }).eq('discord_id', userId);
                 }
 
                 let { count, error: countError } = await supabaseClient
@@ -1110,8 +1251,10 @@
 
                 if (count !== null && !countError) {
                     document.getElementById('visitCount').textContent = count.toLocaleString('en-US');
-                    return;
                 }
+
+                fetchLeaderboard();
+                return;
             } catch (err) {
                 console.error('Supabase error, using fallback mode:', err);
             }
@@ -1124,6 +1267,40 @@
             localStorage.setItem('srccxd_unique_visits', currentVisits);
         }
         document.getElementById('visitCount').textContent = currentVisits.toLocaleString('en-US');
+    }
+
+    async function fetchLeaderboard() {
+        const widget = document.getElementById('leaderboardWidget');
+        const list = document.getElementById('leaderboardList');
+        if (!supabaseClient || !widget || !list) return;
+
+        try {
+            let { data, error } = await supabaseClient
+                .from('visitors')
+                .select('username, avatar_url, visit_count')
+                .not('username', 'is', null)
+                .order('visit_count', { ascending: false })
+                .limit(5);
+
+            if (error || !data || data.length === 0) {
+                widget.classList.add('hidden');
+                return;
+            }
+
+            list.innerHTML = data.map((row, i) => `
+                <div class="leaderboard-row">
+                    <span class="leaderboard-rank">#${i + 1}</span>
+                    <img class="leaderboard-avatar" src="${row.avatar_url || 'pfp.png'}" alt="">
+                    <span class="leaderboard-name">${row.username || 'Unknown'}</span>
+                    <span class="leaderboard-count">${row.visit_count || 0}</span>
+                </div>
+            `).join('');
+
+            widget.classList.remove('hidden');
+        } catch (err) {
+            console.error('Leaderboard fetch error:', err);
+            widget.classList.add('hidden');
+        }
     }
 
     const DISCORD_CLIENT_ID = '1529885857811660933';
