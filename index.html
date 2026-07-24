@@ -1043,6 +1043,10 @@
             <span>Server rank:</span>
             <span id="statServerRole">No rank</span>
         </div>
+        <div class="stats-row">
+            <span>Points:</span>
+            <span id="statPoints">0</span>
+        </div>
     </div>
 </div>
 
@@ -1234,33 +1238,54 @@
         supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     }
 
+    // Napi pontok mennyisege minden egyes napi (elso aznapi) belepesnel
+    const DAILY_POINTS_AMOUNT = 10;
+
+    function todayDateString() {
+        return new Date().toISOString().slice(0, 10); // 'YYYY-MM-DD' (UTC)
+    }
+
     async function handleUniqueVisit(userId, username, avatarUrl) {
         let currentVisits = parseInt(localStorage.getItem('srccxd_unique_visits') || '1420');
-        
+        let pointsResult = { points: 0, awardedToday: false };
+
         if (supabaseClient) {
             try {
                 let { data, error } = await supabaseClient
                     .from('visitors')
-                    .select('discord_id, visit_count')
+                    .select('discord_id, visit_count, points, last_points_date')
                     .eq('discord_id', userId)
                     .maybeSingle();
 
                 if (error) throw error;
 
+                const today = todayDateString();
+
                 if (!data) {
+                    // Uj latogato: elso napi pontjait rogton megkapja
+                    pointsResult = { points: DAILY_POINTS_AMOUNT, awardedToday: true };
                     const { error: insertError } = await supabaseClient.from('visitors').insert([{
                         discord_id: userId,
                         username: username || null,
                         avatar_url: avatarUrl || null,
                         visit_count: 1,
+                        points: pointsResult.points,
+                        last_points_date: today,
                         last_visit: new Date().toISOString()
                     }]);
                     if (insertError) throw insertError;
                 } else {
+                    const existingPoints = data.points || 0;
+                    const alreadyClaimedToday = data.last_points_date === today;
+                    const newPoints = alreadyClaimedToday ? existingPoints : existingPoints + DAILY_POINTS_AMOUNT;
+                    pointsResult = { points: newPoints, awardedToday: !alreadyClaimedToday };
+
                     const { error: updateError } = await supabaseClient.from('visitors').update({
                         username: username || null,
                         avatar_url: avatarUrl || null,
                         visit_count: (data.visit_count || 0) + 1,
+                        points: newPoints,
+                        last_points_date: today,
                         last_visit: new Date().toISOString()
                     }).eq('discord_id', userId);
                     if (updateError) throw updateError;
@@ -1275,12 +1300,13 @@
                 }
 
                 fetchLeaderboard();
-                return;
+                return pointsResult;
             } catch (err) {
                 console.error('Supabase error, using fallback mode:', err);
             }
         }
 
+        // Fallback: localStorage-alapu napi pontszamitas, ha nincs Supabase
         let userTrackedKey = 'counted_discord_' + userId;
         if (!localStorage.getItem(userTrackedKey)) {
             localStorage.setItem(userTrackedKey, 'true');
@@ -1288,6 +1314,20 @@
             localStorage.setItem('srccxd_unique_visits', currentVisits);
         }
         document.getElementById('visitCount').textContent = currentVisits.toLocaleString('en-US');
+
+        const pointsKey = 'srccxd_points_' + userId;
+        const lastPointsDateKey = 'srccxd_last_points_date_' + userId;
+        const today = todayDateString();
+        const existingPoints = parseInt(localStorage.getItem(pointsKey) || '0');
+        const lastPointsDate = localStorage.getItem(lastPointsDateKey);
+        const alreadyClaimedToday = lastPointsDate === today;
+        const newPoints = alreadyClaimedToday ? existingPoints : existingPoints + DAILY_POINTS_AMOUNT;
+
+        localStorage.setItem(pointsKey, String(newPoints));
+        localStorage.setItem(lastPointsDateKey, today);
+
+        pointsResult = { points: newPoints, awardedToday: !alreadyClaimedToday };
+        return pointsResult;
     }
 
     async function fetchLeaderboard() {
@@ -1399,7 +1439,7 @@
                 ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`
                 : `https://cdn.discordapp.com/embed/avatars/${defaultAvatarIndex(user.id)}.png`;
 
-            await handleUniqueVisit(user.id, username, avatarUrl);
+            const pointsResult = await handleUniqueVisit(user.id, username, avatarUrl);
 
             const userIdBigInt = BigInt(user.id);
             const timestampMs = Number((userIdBigInt >> 22n) + 1420070400000n);
@@ -1409,6 +1449,7 @@
             localStorage.setItem('discord_username', username);
             localStorage.setItem('discord_avatar', avatarUrl);
             localStorage.setItem('discord_reg_date', regDateFormatted);
+            localStorage.setItem('discord_points', String(pointsResult.points));
 
             let isMember = false;
             let highestRole = 'No rank';
@@ -1438,8 +1479,12 @@
             localStorage.setItem('discord_is_member', isMember ? 'true' : 'false');
             localStorage.setItem('discord_server_role', highestRole);
 
-            showLoggedInUI(username, avatarUrl, regDateFormatted, isMember, highestRole);
-            showGreetingToast(`👋 Welcome, ${username}!`);
+            showLoggedInUI(username, avatarUrl, regDateFormatted, isMember, highestRole, pointsResult.points);
+            if (pointsResult.awardedToday) {
+                showGreetingToast(`👋 Welcome back, ${username}! +${DAILY_POINTS_AMOUNT} daily points`);
+            } else {
+                showGreetingToast(`👋 Welcome, ${username}!`);
+            }
             return true;
         } catch (err) {
             console.error('Data fetch error:', err);
@@ -1448,7 +1493,7 @@
         }
     }
 
-    function showLoggedInUI(username, avatarUrl, regDate, isMember, roleName) {
+    function showLoggedInUI(username, avatarUrl, regDate, isMember, roleName, points) {
         const topProfileWrapper = document.getElementById('topProfileWrapper');
         document.getElementById('top-username-display').innerText = username;
         if (avatarUrl) {
@@ -1465,6 +1510,7 @@
         }
 
         document.getElementById('statServerRole').innerText = roleName || 'No rank';
+        document.getElementById('statPoints').innerText = (points || 0).toLocaleString('en-US');
 
         topProfileWrapper.classList.remove('hidden');
     }
