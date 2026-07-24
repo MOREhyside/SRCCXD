@@ -405,6 +405,108 @@
     .btn-instagram:hover { background: #E1306C; box-shadow: 0 8px 22px rgba(225, 48, 108, 0.45); }
     .btn-email:hover     { background: #EA4335; box-shadow: 0 8px 22px rgba(234, 67, 53, 0.45); }
 
+    /* Live badge on Twitch button */
+    .live-badge {
+        position: absolute;
+        right: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        display: none;
+        align-items: center;
+        gap: 5px;
+        background: #eb0400;
+        color: #fff;
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        padding: 4px 8px 4px 6px;
+        border-radius: 20px;
+        text-transform: uppercase;
+    }
+    .live-badge.show { display: inline-flex; }
+    .live-badge .live-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #fff;
+        animation: livePulse 1.4s ease-in-out infinite;
+    }
+    @keyframes livePulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.35; }
+    }
+
+    /* Discord live presence pill (public, no login required) */
+    .presence-pill {
+        display: none;
+        align-items: center;
+        gap: 8px;
+        justify-content: center;
+        margin-top: 14px;
+        font-size: 0.8rem;
+        color: var(--text-dim);
+    }
+    .presence-pill.show { display: flex; }
+    .presence-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #3ba55d;
+        box-shadow: 0 0 8px #3ba55d;
+        flex-shrink: 0;
+    }
+    .presence-pill strong { color: var(--text-main); }
+
+    /* Now-playing (Last.fm) pill */
+    .nowplaying-pill {
+        display: none;
+        align-items: center;
+        gap: 10px;
+        margin-top: 10px;
+        padding: 8px 14px;
+        border-radius: 20px;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.08);
+        font-size: 0.78rem;
+        color: var(--text-dim);
+        max-width: 100%;
+    }
+    .nowplaying-pill.show { display: inline-flex; }
+    .nowplaying-pill img {
+        width: 22px;
+        height: 22px;
+        border-radius: 5px;
+        object-fit: cover;
+        flex-shrink: 0;
+    }
+    .nowplaying-pill .np-text {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 220px;
+    }
+    .nowplaying-pill .np-text strong { color: var(--text-main); }
+    .nowplaying-eq {
+        display: flex;
+        align-items: flex-end;
+        gap: 2px;
+        height: 12px;
+        flex-shrink: 0;
+    }
+    .nowplaying-eq span {
+        width: 3px;
+        background: var(--accent);
+        border-radius: 1px;
+        animation: eqBounce 0.9s ease-in-out infinite;
+    }
+    .nowplaying-eq span:nth-child(1) { animation-delay: 0s; }
+    .nowplaying-eq span:nth-child(2) { animation-delay: 0.2s; }
+    .nowplaying-eq span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes eqBounce {
+        0%, 100% { height: 3px; }
+        50% { height: 12px; }
+    }
+
     /* ================= CASINO SECTION ================= */
     .casino-section {
         width: 100%;
@@ -516,6 +618,132 @@
     @media (min-width: 700px) {
         .casino-section { max-width: 900px; }
         .casino-grid { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+    }
+
+    /* ================= GUESTBOOK SECTION ================= */
+    .guestbook-section {
+        width: 100%;
+        max-width: 420px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .guestbook-card {
+        background: var(--panel);
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+        border: 1px solid var(--panel-border);
+        border-radius: 16px;
+        padding: 22px;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+    }
+
+    .guestbook-form {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .guestbook-form textarea {
+        resize: none;
+        min-height: 70px;
+        border-radius: 10px;
+        border: 1px solid var(--panel-border);
+        background: rgba(255,255,255,0.04);
+        color: var(--text-main);
+        font-family: 'Inter', sans-serif;
+        font-size: 0.88rem;
+        padding: 12px 14px;
+    }
+    .guestbook-form textarea:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+    }
+
+    .guestbook-form-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .guestbook-char-count {
+        font-size: 0.72rem;
+        color: var(--text-dim);
+    }
+
+    .guestbook-submit {
+        border: none;
+        background: var(--accent);
+        color: #050814;
+        font-weight: 600;
+        font-size: 0.85rem;
+        padding: 9px 18px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background 0.2s ease;
+        white-space: nowrap;
+    }
+    .guestbook-submit:hover { background: var(--accent-hover); }
+    .guestbook-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .guestbook-login-hint {
+        font-size: 0.82rem;
+        color: var(--text-dim);
+        text-align: center;
+        padding: 10px;
+    }
+
+    .guestbook-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        max-height: 320px;
+        overflow-y: auto;
+    }
+
+    .guestbook-entry {
+        display: flex;
+        gap: 10px;
+        padding: 10px;
+        border-radius: 10px;
+        background: rgba(255,255,255,0.03);
+        text-align: left;
+    }
+
+    .guestbook-entry img {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        object-fit: cover;
+        flex-shrink: 0;
+    }
+
+    .guestbook-entry-body { min-width: 0; flex: 1; }
+
+    .guestbook-entry-name {
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: var(--text-main);
+    }
+
+    .guestbook-entry-msg {
+        font-size: 0.82rem;
+        color: var(--text-dim);
+        word-wrap: break-word;
+        margin-top: 2px;
+    }
+
+    .guestbook-empty {
+        font-size: 0.82rem;
+        color: var(--text-dim);
+        text-align: center;
+        font-style: italic;
+        padding: 8px;
     }
 
     /* ================= SPOTIFY VERTICAL PLAYER ================= */
@@ -852,7 +1080,27 @@
         padding: 0 20px 30px;
         font-size: 0.72rem;
         color: rgba(144, 160, 200, 0.5);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
     }
+
+    .footer-links {
+        display: flex;
+        gap: 14px;
+    }
+
+    .footer-link-btn {
+        background: none;
+        border: none;
+        color: rgba(144, 160, 200, 0.7);
+        font-size: 0.72rem;
+        text-decoration: underline;
+        cursor: pointer;
+        font-family: 'Inter', sans-serif;
+    }
+    .footer-link-btn:hover { color: var(--text-main); }
 
     .visitor-counter {
         font-size: 0.8rem;
@@ -913,10 +1161,12 @@
     }
 
     .leaderboard-rank {
-        width: 16px;
+        width: 20px;
+        text-align: center;
         color: var(--text-dim);
         font-weight: 600;
         flex-shrink: 0;
+        font-size: 0.95rem;
     }
 
     .leaderboard-avatar {
@@ -982,697 +1232,127 @@
         z-index: 160;
         pointer-events: none;
     }
+
+    /* ================= QR MODAL ================= */
+    .qr-modal-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 170;
+        background: rgba(3, 5, 12, 0.85);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+    .qr-modal-overlay.hidden { display: none; }
+
+    .qr-modal-card {
+        background: var(--panel-solid);
+        border: 1px solid var(--panel-border);
+        border-radius: 16px;
+        padding: 26px;
+        text-align: center;
+        max-width: 300px;
+        width: 100%;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    }
+
+    .qr-modal-card h3 {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.1rem;
+        margin-bottom: 16px;
+    }
+
+    .qr-modal-card img {
+        width: 100%;
+        max-width: 200px;
+        border-radius: 10px;
+        background: #fff;
+        padding: 10px;
+    }
+
+    .qr-modal-close {
+        margin-top: 18px;
+        width: 100%;
+        padding: 10px;
+        border-radius: 8px;
+        border: 1px solid var(--panel-border);
+        background: transparent;
+        color: var(--text-dim);
+        cursor: pointer;
+        font-family: 'Inter', sans-serif;
+    }
+    .qr-modal-close:hover { color: var(--text-main); border-color: rgba(255,255,255,0.4); }
+
+    .qr-trigger-btn {
+        background: none;
+        border: none;
+        color: var(--text-dim);
+        font-size: 0.75rem;
+        text-decoration: underline;
+        cursor: pointer;
+        margin-top: 6px;
+        font-family: 'Inter', sans-serif;
+    }
+    .qr-trigger-btn:hover { color: var(--text-main); }
+
+    /* ================= PRIVACY MODAL ================= */
+    .privacy-modal-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 170;
+        background: rgba(3, 5, 12, 0.85);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+    .privacy-modal-overlay.hidden { display: none; }
+
+    .privacy-modal-card {
+        background: var(--panel-solid);
+        border: 1px solid var(--panel-border);
+        border-radius: 16px;
+        padding: 26px;
+        max-width: 420px;
+        width: 100%;
+        max-height: 80vh;
+        overflow-y: auto;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        text-align: left;
+    }
+
+    .privacy-modal-card h3 {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.15rem;
+        margin-bottom: 14px;
+    }
+
+    .privacy-modal-card p, .privacy-modal-card li {
+        font-size: 0.85rem;
+        color: var(--text-dim);
+        line-height: 1.5;
+        margin-bottom: 10px;
+    }
+
+    .privacy-modal-card ul { padding-left: 18px; }
+
+    .privacy-modal-close {
+        margin-top: 10px;
+        width: 100%;
+        padding: 10px;
+        border-radius: 8px;
+        border: none;
+        background: var(--accent);
+        color: #050814;
+        font-weight: 600;
+        cursor: pointer;
+        font-family: 'Inter', sans-serif;
+    }
+    .privacy-modal-close:hover { background: var(--accent-hover); }
 </style>
 </head>
-<body class="no-js">
-
-<!-- Immediately apply the saved color on page load, if any -->
-<script>
-    const savedAccent = localStorage.getItem('discord_accent_color');
-    if (savedAccent) {
-        document.documentElement.style.setProperty('--accent', savedAccent);
-        document.documentElement.style.setProperty('--accent-hover', savedAccent);
-    }
-</script>
-
-<!-- ================= LEADERBOARD WIDGET ================= -->
-<div id="leaderboardWidget" class="leaderboard-widget hidden">
-    <div class="leaderboard-header">🏆 Top Visitors</div>
-    <div class="leaderboard-list" id="leaderboardList">
-        <span class="leaderboard-empty">Loading...</span>
-    </div>
-</div>
-
-<!-- ================= GREETING TOAST ================= -->
-<div id="greetingToast" class="greeting-toast"></div>
-
-<!-- ================= CONFETTI CANVAS ================= -->
-<canvas id="confettiCanvas"></canvas>
-
-<!-- ================= TOP RIGHT DISCORD PROFILE & STATS WIDGET ================= -->
-<div id="topProfileWrapper" class="top-right-wrapper hidden">
-    <div id="top-profile" class="top-right-profile" onclick="toggleStatsCard()">
-        <img id="top-user-avatar" src="" alt="Avatar">
-        <span id="top-username-display"></span>
-        <button class="logout-btn" onclick="event.stopPropagation(); logout();">Logout</button>
-    </div>
-    
-    <!-- Statistics box -->
-    <div id="discordStatsCard" class="discord-stats-card hidden">
-        <div class="stats-header">
-            <span>Discord Statistics</span>
-            <span style="font-size: 0.75rem; color: var(--accent);" id="memberCheckBadge">✓ verified</span>
-        </div>
-        <div class="stats-row">
-            <span>Registered:</span>
-            <span id="statRegDate">-</span>
-        </div>
-        <div class="stats-row">
-            <span>Server member:</span>
-            <span id="statServerMember">-</span>
-        </div>
-        <div class="stats-row">
-            <span>Server rank:</span>
-            <span id="statServerRole">No rank</span>
-        </div>
-    </div>
-</div>
-
-<!-- ================= INITIAL LOADER ANIMATION ================= -->
-<div class="intro-loader" id="introLoader">
-    <div class="loader-spinner"></div>
-</div>
-
-<div class="bg">
-    <video class="bg-video" autoplay muted loop playsinline poster="bg.jpg" aria-hidden="true">
-        <source src="bg-video.mp4" type="video/mp4">
-    </video>
-</div>
-
-<!-- ================= SPOTIFY PLAYER ================= -->
-<audio id="bgMusic" preload="auto"></audio>
-
-<div class="spotify-player" id="spotifyPlayer">
-    <div class="sp-header">
-        <span>Now Playing</span>
-        <span id="spPlaylistCount">1/3</span>
-    </div>
-    <img id="spCover" src="Japan.jpg" alt="Cover" class="sp-cover">
-    
-    <div class="sp-track-row">
-        <div class="sp-meta">
-            <div class="sp-title" id="spTitle">Japan</div>
-            <div class="sp-artist" id="spArtist">Juice WRLD</div>
-        </div>
-        <button class="sp-like-btn" aria-label="Save to favorites">
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-        </button>
-    </div>
-
-    <div class="sp-progress-area">
-        <input type="range" id="spProgress" min="0" max="100" value="0" class="sp-slider" aria-label="Progress bar">
-        <div class="sp-time-row">
-            <span id="spCurrentTime">0:00</span>
-            <span id="spDuration">0:00</span>
-        </div>
-    </div>
-
-    <div class="sp-controls">
-        <button class="sp-control-btn" id="spShuffleBtn" aria-label="Shuffle">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z"/></svg>
-        </button>
-        <button class="sp-control-btn" id="spPrevBtn" aria-label="Previous track">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
-        </button>
-        <button class="sp-play-btn-large" id="spPlayBtn" aria-label="Play / Pause">
-            <svg id="spIcon" viewBox="0 0 24 24" width="20" height="20" fill="#121212"><path d="M8 5v14l11-7z"/></svg>
-        </button>
-        <button class="sp-control-btn" id="spNextBtn" aria-label="Next track">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
-        </button>
-        <button class="sp-control-btn" id="spRepeatBtn" aria-label="Repeat">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg>
-        </button>
-    </div>
-
-    <div class="sp-volume-row">
-        <svg viewBox="0 0 24 24" width="16" height="16" fill="#b3b3b3"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
-        <input type="range" id="spVolume" min="0" max="1" step="0.01" value="0.15" class="sp-slider" aria-label="Volume">
-    </div>
-</div>
-
-<!-- ================= GATE ================= -->
-<div class="gate-overlay" id="gateOverlay" role="dialog" aria-modal="true" aria-labelledby="gateTitle">
-    <div class="gate-card" id="stepDiscord">
-        <div class="gate-badge" aria-hidden="true">
-            <img src="discord-logo.png" alt="">
-        </div>
-        <h2 id="gateTitle">Discord Login</h2>
-        <p style="font-size: 0.88rem; color: var(--text-dim); margin-bottom: 20px;">Please log in with your Discord account first to continue.</p>
-        <button class="gate-btn gate-btn-discord" onclick="loginWithDiscord()">
-            <img src="discord-logo.png" alt="" width="20" height="20"> Login with Discord
-        </button>
-        <button class="gate-btn gate-btn-leave" id="btnLeaveDiscord">Cancel</button>
-    </div>
-
-    <div class="gate-card hidden" id="stepAge">
-        <div class="gate-badge" aria-hidden="true" style="font-size: 1.1rem; font-family: 'Space Grotesk', sans-serif; font-weight: 700; color: var(--accent);">18+</div>
-        <h2>Access Verification</h2>
-        <label class="gate-check">
-            <input type="checkbox" id="chkAge">
-            I confirm I am 18 or older.
-        </label>
-        <button class="gate-btn gate-btn-confirm" id="btnConfirm" disabled>Confirm, Enter</button>
-        <button class="gate-btn gate-btn-leave" id="btnLeaveAge">No, take me away!</button>
-    </div>
-</div>
-
-<main id="top">
-    <div class="browser-window" id="mainCard">
-        <div class="browser-header">
-            <div class="dots" aria-hidden="true">
-                <div class="dot dot-red"></div>
-                <div class="dot dot-yellow"></div>
-                <div class="dot dot-green"></div>
-            </div>
-        </div>
-
-        <div class="content">
-            <div class="profile-container">
-                <img src="pfp.png" alt="Profile picture" class="profile-img" width="108" height="108" loading="eager">
-            </div>
-
-            <div class="wordmark">SRCCXD</div>
-
-            <nav aria-label="Social links">
-                <ul class="links-list">
-                    <li>
-                        <a href="https://discord.gg/kNU6CpUC5Q" target="_blank" rel="noopener noreferrer" class="link-btn btn-discord">
-                            <img src="discord-logo.png" alt="" class="link-icon" width="40" height="40" loading="lazy"> Discord Server
-                        </a>
-                    </li>
-                    <li>
-                        <a href="https://www.twitch.tv/srccxd" target="_blank" rel="noopener noreferrer" class="link-btn btn-twitch">
-                            <img src="twitch-logo.png" alt="" class="link-icon" width="40" height="40" loading="lazy"> Twitch
-                        </a>
-                    </li>
-                    <li>
-                        <a href="https://t.me/srccxd" target="_blank" rel="noopener noreferrer" class="link-btn btn-telegram">
-                            <img src="telegram-logo.png" alt="" class="link-icon" width="40" height="40" loading="lazy"> Telegram
-                        </a>
-                    </li>
-                    <li>
-                        <a href="https://www.instagram.com/v.tamas._" target="_blank" rel="noopener noreferrer" class="link-btn btn-instagram">
-                            <img src="ig.webp" alt="" class="link-icon" width="40" height="40" loading="lazy"> Instagram
-                        </a>
-                    </li>
-                    <li>
-                        <a href="mailto:sourceid18@gmail.com" class="link-btn btn-email">
-                            <img src="gmail-logo.png" alt="" class="link-icon" width="40" height="40" loading="lazy"> Business email
-                        </a>
-                    </li>
-                </ul>
-            </nav>
-
-            <div class="visitor-counter">
-                <span>👀 Unique visits: <strong id="visitCount">...</strong></span>
-            </div>
-        </div>
-    </div>
-
-    <div class="casino-section" id="casinoSection">
-        <div class="section-header-title">
-            🎰 Featured Casino
-            <span class="ad-tag">Advertisement</span>
-        </div>
-
-        <div class="casino-grid">
-            <div class="casino-card">
-                <img src="spinline-logo.png" alt="SpinLine" class="casino-logo" loading="lazy">
-                <ul class="casino-perks">
-                    <li class="casino-perk-item">Welcome package</li>
-                    <li class="casino-perk-item">Up to 720,000 HUF</li>
-                    <li class="casino-perk-item">+ 800 Free Spins</li>
-                </ul>
-                <a href="https://spln.pleotra.com/?mid=382466_2215736" target="_blank" rel="noopener noreferrer" class="casino-btn">Play now</a>
-            </div>
-        </div>
-    </div>
-</main>
-
-<footer>
-    <span>&copy; <span id="year"></span> casi</span>
-    <span> · Running for <strong id="daysSinceLaunch">-</strong> days</span>
-</footer>
-
-<script>
-    document.body.classList.remove('no-js');
-    document.getElementById('year').textContent = new Date().getFullYear();
-
-    const SUPABASE_URL = 'https://lhbnumsgpoiwecndlwfb.supabase.co'; 
-    const SUPABASE_ANON_KEY = 'sb_publishable_9EIokcoH1VwiTt8kw5Tq7w__HRQLcoe';
-    let supabaseClient = null;
-    
-    if (SUPABASE_URL !== 'ITT_A_SUPABASE_URL_CIMED' && SUPABASE_ANON_KEY !== 'ITT_A_SUPABASE_ANON_KULCSOD') {
-        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    }
-
-    async function handleUniqueVisit(userId, username, avatarUrl) {
-        let currentVisits = parseInt(localStorage.getItem('srccxd_unique_visits') || '1420');
-        
-        if (supabaseClient) {
-            try {
-                let { data, error } = await supabaseClient
-                    .from('visitors')
-                    .select('discord_id, visit_count')
-                    .eq('discord_id', userId)
-                    .maybeSingle();
-
-                if (!data) {
-                    await supabaseClient.from('visitors').insert([{
-                        discord_id: userId,
-                        username: username || null,
-                        avatar_url: avatarUrl || null,
-                        visit_count: 1,
-                        last_visit: new Date().toISOString()
-                    }]);
-                } else {
-                    await supabaseClient.from('visitors').update({
-                        username: username || null,
-                        avatar_url: avatarUrl || null,
-                        visit_count: (data.visit_count || 0) + 1,
-                        last_visit: new Date().toISOString()
-                    }).eq('discord_id', userId);
-                }
-
-                let { count, error: countError } = await supabaseClient
-                    .from('visitors')
-                    .select('*', { count: 'exact', head: true });
-
-                if (count !== null && !countError) {
-                    document.getElementById('visitCount').textContent = count.toLocaleString('en-US');
-                }
-
-                fetchLeaderboard();
-                return;
-            } catch (err) {
-                console.error('Supabase error, using fallback mode:', err);
-            }
-        }
-
-        let userTrackedKey = 'counted_discord_' + userId;
-        if (!localStorage.getItem(userTrackedKey)) {
-            localStorage.setItem(userTrackedKey, 'true');
-            currentVisits += 1;
-            localStorage.setItem('srccxd_unique_visits', currentVisits);
-        }
-        document.getElementById('visitCount').textContent = currentVisits.toLocaleString('en-US');
-    }
-
-    async function fetchLeaderboard() {
-        const widget = document.getElementById('leaderboardWidget');
-        const list = document.getElementById('leaderboardList');
-        if (!supabaseClient || !widget || !list) return;
-
-        try {
-            let { data, error } = await supabaseClient
-                .from('visitors')
-                .select('username, avatar_url, visit_count')
-                .not('username', 'is', null)
-                .order('visit_count', { ascending: false })
-                .limit(5);
-
-            if (error || !data || data.length === 0) {
-                widget.classList.add('hidden');
-                return;
-            }
-
-            list.innerHTML = data.map((row, i) => `
-                <div class="leaderboard-row">
-                    <span class="leaderboard-rank">#${i + 1}</span>
-                    <img class="leaderboard-avatar" src="${row.avatar_url || 'pfp.png'}" alt="">
-                    <span class="leaderboard-name">${row.username || 'Unknown'}</span>
-                    <span class="leaderboard-count">${row.visit_count || 0}</span>
-                </div>
-            `).join('');
-
-            widget.classList.remove('hidden');
-        } catch (err) {
-            console.error('Leaderboard fetch error:', err);
-            widget.classList.add('hidden');
-        }
-    }
-
-    const DISCORD_CLIENT_ID = '1529885857811660933';
-    const DISCORD_GUILD_ID = '1529406935517106276';
-    const REDIRECT_URI = 'https://morehyside.github.io/SRCCXD/';
-
-    const ROLE_MAP = {
-        '1529407455442899044': '.!',
-        '1529450339034595328': 'Server manager',
-        '1529532500643152067': 'Helper',
-        '1529407704140087326': 'tag'
-    };
-
-    function clearAuthStorage() {
-        localStorage.removeItem('discord_token');
-        localStorage.removeItem('discord_username');
-        localStorage.removeItem('discord_avatar');
-        localStorage.removeItem('discord_reg_date');
-        localStorage.removeItem('discord_is_member');
-        localStorage.removeItem('discord_server_role');
-        localStorage.removeItem('discord_accent_color');
-        document.documentElement.style.setProperty('--accent', '#1ed760');
-        document.documentElement.style.setProperty('--accent-hover', '#1db954');
-    }
-
-    function loginWithDiscord() {
-        try {
-            clearAuthStorage();
-            const scopes = encodeURIComponent('identify guilds guilds.members.read');
-            const authUrl = `https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=token&scope=${scopes}`;
-            window.location.href = authUrl;
-        } catch (err) {
-            console.error('Login error:', err);
-        }
-    }
-
-    function logout() {
-        clearAuthStorage();
-        window.location.href = REDIRECT_URI;
-    }
-
-    function toggleStatsCard() {
-        const statsCard = document.getElementById('discordStatsCard');
-        statsCard.classList.toggle('hidden');
-    }
-
-    async function fetchUserData(token) {
-        try {
-            const userRes = await fetch('https://discord.com/api/users/@me', {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            if (!userRes.ok) throw new Error('Discord API error');
-            const user = await userRes.json();
-
-            // Apply dynamic Discord profile color
-            if (user.accent_color) {
-                const hexColor = '#' + user.accent_color.toString(16).padStart(6, '0');
-                document.documentElement.style.setProperty('--accent', hexColor);
-                document.documentElement.style.setProperty('--accent-hover', hexColor);
-                localStorage.setItem('discord_accent_color', hexColor);
-            }
-
-            await handleUniqueVisit(user.id);
-
-            const username = user.global_name || user.username;
-            let avatarUrl = user.avatar 
-                ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`
-                : `https://cdn.discordapp.com/embed/avatars/${Number(user.id >> 22n) % 6}.png`;
-
-            const userIdBigInt = BigInt(user.id);
-            const timestampMs = Number((userIdBigInt >> 22n) + 1420070400000n);
-            const regDateObj = new Date(timestampMs);
-            const regDateFormatted = regDateObj.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-
-            localStorage.setItem('discord_username', username);
-            localStorage.setItem('discord_avatar', avatarUrl);
-            localStorage.setItem('discord_reg_date', regDateFormatted);
-
-            let isMember = false;
-            let highestRole = 'No rank';
-
-            try {
-                const memberRes = await fetch(`https://discord.com/api/users/@me/guilds/${DISCORD_GUILD_ID}/member`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-
-                if (memberRes.ok) {
-                    isMember = true;
-                    const memberData = await memberRes.json();
-                    
-                    if (memberData.roles && memberData.roles.length > 0) {
-                        for (let roleId of memberData.roles) {
-                            if (ROLE_MAP[roleId]) {
-                                highestRole = ROLE_MAP[roleId];
-                                break;
-                            }
-                        }
-                    }
-                }
-            } catch (e) {
-                console.error('Server membership/role lookup error:', e);
-            }
-
-            localStorage.setItem('discord_is_member', isMember ? 'true' : 'false');
-            localStorage.setItem('discord_server_role', highestRole);
-
-            showLoggedInUI(username, avatarUrl, regDateFormatted, isMember, highestRole);
-            return true;
-        } catch (err) {
-            console.error('Data fetch error:', err);
-            clearAuthStorage();
-            return false;
-        }
-    }
-
-    function showLoggedInUI(username, avatarUrl, regDate, isMember, roleName) {
-        const topProfileWrapper = document.getElementById('topProfileWrapper');
-        document.getElementById('top-username-display').innerText = username;
-        if (avatarUrl) {
-            document.getElementById('top-user-avatar').src = avatarUrl;
-        }
-        
-        document.getElementById('statRegDate').innerText = regDate || '-';
-        
-        const serverMemberEl = document.getElementById('statServerMember');
-        if (isMember) {
-            serverMemberEl.innerHTML = 'Yes <span style="color: #27c93f;">✔</span>';
-        } else {
-            serverMemberEl.innerHTML = 'No <span style="color: #ff5f56;">❌</span>';
-        }
-
-        document.getElementById('statServerRole').innerText = roleName || 'No rank';
-
-        topProfileWrapper.classList.remove('hidden');
-    }
-
-    window.addEventListener('load', async function () {
-        setTimeout(function () {
-            var introLoader = document.getElementById('introLoader');
-            if (introLoader) {
-                introLoader.classList.add('fade-out');
-            }
-        }, 500);
-
-        const stepDiscord = document.getElementById('stepDiscord');
-        const stepAge = document.getElementById('stepAge');
-
-        let isAuthed = false;
-
-        try {
-            const hash = window.location.hash.substring(1);
-            const params = new URLSearchParams(hash);
-            const accessToken = params.get('access_token');
-            const errorParam = params.get('error');
-
-            if (errorParam) {
-                window.history.replaceState({}, document.title, window.location.pathname);
-            } else if (accessToken) {
-                window.history.replaceState({}, document.title, window.location.pathname);
-                localStorage.setItem('discord_token', accessToken);
-                isAuthed = await fetchUserData(accessToken);
-            } else {
-                const token = localStorage.getItem('discord_token');
-                if (token) {
-                    isAuthed = await fetchUserData(token);
-                } else {
-                    document.getElementById('visitCount').textContent = Number(localStorage.getItem('srccxd_unique_visits') || '1420').toLocaleString('en-US');
-                }
-            }
-        } catch (err) {
-            console.error('Token processing error:', err);
-        }
-
-        if (isAuthed) {
-            stepDiscord.classList.add('hidden');
-            stepAge.classList.remove('hidden');
-        } else {
-            stepDiscord.classList.remove('hidden');
-            stepAge.classList.add('hidden');
-        }
-    });
-
-    document.addEventListener('DOMContentLoaded', function () {
-        var bgVideo = document.querySelector('.bg-video');
-        if (bgVideo) {
-            var startVideo = function () {
-                var playPromise = bgVideo.play();
-                if (playPromise !== undefined) {
-                    playPromise.catch(function () {
-                        var resume = function () { bgVideo.play(); };
-                        document.addEventListener('click', resume, { once: true });
-                        document.addEventListener('touchstart', resume, { once: true });
-                        document.addEventListener('keydown', resume, { once: true });
-                    });
-                }
-            };
-            startVideo();
-        }
-
-        var playlist = [
-            {
-                title: "Japan",
-                artist: "Juice WRLD",
-                src: "audio.mp3",
-                cover: "Japan.jpg"
-            },
-            {
-                title: "Dark Queen",
-                artist: "Lil Uzi Vert",
-                src: "Dark Queen.mp3",
-                cover: "Dark Queen.jpg"
-            },
-            {
-                title: "Feeling",
-                artist: "Juice WRLD",
-                src: "Feeling.mp3",
-                cover: "Feeling.jpg"
-            }
-        ];
-
-        var currentTrackIndex = 0;
-
-        var bgMusic = document.getElementById('bgMusic');
-        var spPlayBtn = document.getElementById('spPlayBtn');
-        var spPrevBtn = document.getElementById('spPrevBtn');
-        var spNextBtn = document.getElementById('spNextBtn');
-        var spIcon = document.getElementById('spIcon');
-        var spVolume = document.getElementById('spVolume');
-        var spProgress = document.getElementById('spProgress');
-        var spCurrentTime = document.getElementById('spCurrentTime');
-        var spDuration = document.getElementById('spDuration');
-        
-        var spTitle = document.getElementById('spTitle');
-        var spArtist = document.getElementById('spArtist');
-        var spCover = document.getElementById('spCover');
-        var spPlaylistCount = document.getElementById('spPlaylistCount');
-
-        bgMusic.volume = 0.15;
-        spVolume.value = 0.15;
-
-        function loadTrack(index) {
-            var track = playlist[index];
-            bgMusic.src = track.src;
-            spTitle.textContent = track.title;
-            spArtist.textContent = track.artist;
-            spCover.src = track.cover;
-            spPlaylistCount.textContent = (index + 1) + "/" + playlist.length;
-            bgMusic.load();
-        }
-
-        loadTrack(currentTrackIndex);
-
-        function formatTime(seconds) {
-            var minutes = Math.floor(seconds / 60);
-            var secs = Math.floor(seconds % 60);
-            return minutes + ':' + (secs < 10 ? '0' : '') + secs;
-        }
-
-        bgMusic.addEventListener('loadedmetadata', function () {
-            spDuration.textContent = formatTime(bgMusic.duration);
-        });
-
-        bgMusic.addEventListener('timeupdate', function () {
-            if (!bgMusic.duration) return;
-            var progressPercent = (bgMusic.currentTime / bgMusic.duration) * 100;
-            spProgress.value = progressPercent;
-            spCurrentTime.textContent = formatTime(bgMusic.currentTime);
-        });
-
-        bgMusic.addEventListener('ended', function () {
-            currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
-            loadTrack(currentTrackIndex);
-            bgMusic.play().then(function () {
-                updatePlayIcon(true);
-            });
-        });
-
-        spProgress.addEventListener('input', function () {
-            if (!bgMusic.duration) return;
-            var seekTime = (spProgress.value / 100) * bgMusic.duration;
-            bgMusic.currentTime = seekTime;
-        });
-
-        function updatePlayIcon(isPlaying) {
-            if (isPlaying) {
-                spIcon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
-            } else {
-                spIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
-            }
-        }
-
-        spPlayBtn.addEventListener('click', function () {
-            if (bgMusic.paused) {
-                bgMusic.play().then(function () {
-                    updatePlayIcon(true);
-                }).catch(function (err) {
-                    console.log("Audio play error:", err);
-                });
-            } else {
-                bgMusic.pause();
-                updatePlayIcon(false);
-            }
-        });
-
-        spPrevBtn.addEventListener('click', function () {
-            currentTrackIndex = (currentTrackIndex - 1 + playlist.length) % playlist.length;
-            loadTrack(currentTrackIndex);
-            bgMusic.play().then(function () {
-                updatePlayIcon(true);
-            });
-        });
-
-        spNextBtn.addEventListener('click', function () {
-            currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
-            loadTrack(currentTrackIndex);
-            bgMusic.play().then(function () {
-                updatePlayIcon(true);
-            });
-        });
-
-        spVolume.addEventListener('input', function () {
-            bgMusic.volume = spVolume.value;
-        });
-
-        var chkAge = document.getElementById('chkAge');
-        var btnConfirm = document.getElementById('btnConfirm');
-        var btnLeaveDiscord = document.getElementById('btnLeaveDiscord');
-        var btnLeaveAge = document.getElementById('btnLeaveAge');
-        var gateOverlay = document.getElementById('gateOverlay');
-        var mainCard = document.getElementById('mainCard');
-        var casinoSection = document.getElementById('casinoSection');
-
-        function updateConfirmState() {
-            btnConfirm.disabled = !chkAge.checked;
-        }
-
-        if (chkAge) {
-            chkAge.addEventListener('change', updateConfirmState);
-        }
-
-        function enterSite() {
-            gateOverlay.classList.add('hiding');
-            mainCard.classList.add('reveal');
-            casinoSection.classList.add('reveal');
-            var bgVideo = document.querySelector('.bg-video');
-            if (bgVideo) { bgVideo.play(); }
-
-            bgMusic.play().then(function () {
-                updatePlayIcon(true);
-            }).catch(function (err) {
-                console.log("Autoplay blocked or failed:", err);
-            });
-
-            setTimeout(function () {
-                gateOverlay.classList.add('hidden');
-            }, 550);
-        }
-
-        if (btnConfirm) {
-            btnConfirm.addEventListener('click', function () {
-                if (!btnConfirm.disabled) enterSite();
-            });
-        }
-
-        function leaveSite() {
-            window.location.href = 'https://www.google.com';
-        }
-
-        if (btnLeaveDiscord) btnLeaveDiscord.addEventListener('click', leaveSite);
-        if (btnLeaveAge) btnLeaveAge.addEventListener('click', leaveSite);
-    });
-</script>
-
-</body>
-</html>
